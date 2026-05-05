@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cybersecurity Literacy</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+<style>
+/* 8-bit Arcade Stickman Quiz Game */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  font-family: 'Press Start 2P', monospace;
+  color: #fff;
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cabinet {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at center, #1a0a2e 0%, #000 70%),
+    #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.cabinet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0.18) 3px,
+    rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+.cabinet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0,0,0,0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 99;
+}
+
+.screen {
+  width: min(1400px, 98vw);
+  height: min(900px, 98vh);
+  background: #0d0221;
+  border: 8px solid #2a1a4a;
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 4px #1a0a2e,
+    0 0 80px rgba(255, 0, 200, 0.25),
+    inset 0 0 100px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pixel-border {
+  position: absolute;
+  inset: 12px;
+  border: 3px dashed #ff2bd6;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.px {
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+
+.glow-cyan { color: #4dffea; text-shadow: 0 0 10px #4dffea, 0 0 20px rgba(77,255,234,0.5); }
+.glow-pink { color: #ff2bd6; text-shadow: 0 0 10px #ff2bd6, 0 0 20px rgba(255,43,214,0.5); }
+.glow-yellow { color: #ffd23f; text-shadow: 0 0 10px #ffd23f, 0 0 20px rgba(255,210,63,0.5); }
+.glow-green { color: #44ff7c; text-shadow: 0 0 10px #44ff7c, 0 0 20px rgba(68,255,124,0.5); }
+.glow-red { color: #ff3860; text-shadow: 0 0 10px #ff3860, 0 0 20px rgba(255,56,96,0.5); }
+
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+.blink { animation: blink 1s step-end infinite; }
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #2a1a4a;
+  margin-bottom: 14px;
+  font-size: 14px;
+  flex: 0 0 auto;
+}
+
+.hud-cell { display: flex; gap: 12px; align-items: center; }
+
+.lang-btn {
+  background: transparent;
+  border: 3px solid #4dffea;
+  color: #4dffea;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-shadow: 0 0 8px #4dffea;
+}
+.lang-btn:hover { background: #4dffea; color: #0d0221; text-shadow: none; }
+
+.score-pip {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #4dffea;
+  display: inline-block;
+}
+.score-pip.filled { background: #44ff7c; border-color: #44ff7c; box-shadow: 0 0 8px #44ff7c; }
+.score-pip.wrong { background: #ff3860; border-color: #ff3860; }
+
+.title-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  gap: 14px;
+  padding: 14px 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.title-sub {
+  font-size: 18px;
+  opacity: 0.85;
+}
+
+.start-btn {
+  background: #ffd23f;
+  color: #0d0221;
+  border: none;
+  padding: 18px 32px;
+  font-family: inherit;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 6px 6px 0 #2a1a4a;
+  position: relative;
+  top: 0;
+  left: 0;
+  transition: all 0.05s;
+}
+.start-btn:hover { background: #fff; }
+.start-btn:active { top: 6px; left: 6px; box-shadow: 0 0 0 #2a1a4a; }
+
+.question-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.scenario-box {
+  background: #1a0a3e;
+  border: 4px solid #4dffea;
+  padding: 20px 24px;
+  font-size: 24px;
+  line-height: 1.8;
+  white-space: pre-line;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(77,255,234,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.scenario-label {
+  font-size: 14px;
+  color: #ffd23f;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.stage {
+  flex: 1 1 90px;
+  background: linear-gradient(to bottom, #0d0221 0%, #1a0a3e 70%, #2a1a4a 100%);
+  border: 4px solid #2a1a4a;
+  position: relative;
+  min-height: 90px;
+  overflow: hidden;
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #44ff7c 0,
+      #44ff7c 10px,
+      #2a8a44 10px,
+      #2a8a44 20px
+    );
+  border-top: 4px solid #44ff7c;
+  box-shadow: 0 -3px 15px rgba(68,255,124,0.3);
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  box-shadow: 0 0 5px #fff;
+}
+
+.choices-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 18px;
+  align-items: stretch;
+  flex: 0 0 auto;
+}
+
+.choice-btn {
+  background: #1a0a3e;
+  border: 4px solid;
+  padding: 14px 14px;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1.4;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.08s;
+  position: relative;
+  min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.choice-btn:hover:not(:disabled) {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 #000;
+}
+.choice-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.choice-left { border-color: #4dffea; color: #4dffea; }
+.choice-right { border-color: #ff2bd6; color: #ff2bd6; }
+
+.choice-key {
+  font-size: 12px;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+.choice-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #ffd23f;
+  text-shadow: 0 0 10px #ffd23f;
+}
+
+.feedback-box {
+  background: #1a0a3e;
+  border: 4px solid;
+  padding: 18px 22px;
+  font-size: 18px;
+  line-height: 1.7;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.feedback-box.correct { border-color: #44ff7c; }
+.feedback-box.wrong { border-color: #ff3860; }
+
+.feedback-head {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.next-btn {
+  align-self: flex-end;
+  background: transparent;
+  border: 3px solid #ffd23f;
+  color: #ffd23f;
+  font-family: inherit;
+  font-size: 16px;
+  padding: 12px 20px;
+  cursor: pointer;
+  text-shadow: 0 0 8px #ffd23f;
+}
+.next-btn:hover { background: #ffd23f; color: #0d0221; text-shadow: none; }
+
+.end-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  text-align: center;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.end-headline {
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.3;
+}
+
+.end-score {
+  font-size: 26px;
+}
+
+.end-stage {
+  width: 100%;
+  height: 140px;
+  flex: 0 0 auto;
+  background: linear-gradient(to bottom, #0d0221, #1a0a3e 70%, #2a1a4a);
+  border: 4px solid #2a1a4a;
+  position: relative;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg); }
+  100% { transform: translateY(260px) rotate(360deg); }
+}
+
+.stickman {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;
+  height: 144px;
+}
+.stickman.thinking { animation: bob 1.6s steps(2) infinite; }
+@keyframes bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
+
+.stickman.cheer { animation: cheer 0.5s steps(2) infinite; }
+@keyframes cheer {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-3deg); }
+  50% { transform: translateX(-50%) translateY(-12px) rotate(3deg); }
+}
+
+.stickman.dance { animation: dance 0.4s steps(4) infinite; }
+@keyframes dance {
+  0% { transform: translateX(-50%) translateY(0) scaleX(1); }
+  25% { transform: translateX(-30%) translateY(-8px) scaleX(1); }
+  50% { transform: translateX(-50%) translateY(0) scaleX(-1); }
+  75% { transform: translateX(-70%) translateY(-8px) scaleX(-1); }
+  100% { transform: translateX(-50%) translateY(0) scaleX(1); }
+}
+
+.stickman.sad { animation: sad 2s steps(2) infinite; }
+@keyframes sad {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(2px); }
+}
+
+.hint {
+  font-size: 14px;
+  opacity: 0.6;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.result-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 16px;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.4; }
+  94% { opacity: 1; }
+  97% { opacity: 0.6; }
+  98% { opacity: 1; }
+}
+.flicker { animation: flicker 4s infinite; }
+
+.coin-row {
+  font-size: 14px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.choice-btn.flash-correct { animation: flashCorrect 0.5s steps(4); }
+.choice-btn.flash-wrong { animation: flashWrong 0.5s steps(4); }
+@keyframes flashCorrect {
+  0%, 100% { background: #1a0a3e; }
+  50% { background: #44ff7c; color: #0d0221; }
+}
+@keyframes flashWrong {
+  0%, 100% { background: #1a0a3e; }
+  50% { background: #ff3860; color: #fff; }
+}
+
+.logo-art {
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 1.1;
+  color: #ffd23f;
+  font-weight: 900;
+  text-shadow:
+    4px 4px 0 #ff2bd6,
+    8px 8px 0 #4dffea,
+    12px 12px 0 #2a1a4a;
+  letter-spacing: 4px;
+}
+
+.title-sub-text {
+  font-size: clamp(14px, 2vw, 20px);
+  color: #ffd23f;
+  font-weight: 900;
+  text-shadow: 0 0 10px #ffd23f, 0 0 20px rgba(255,210,63,0.5);
+  letter-spacing: 2px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.source-ribbon {
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.5;
+  margin-top: 8px;
+}
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #0d0221; }
+::-webkit-scrollbar-thumb { background: #4dffea; border: 2px solid #0d0221; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+
+<script>
+// Question bank - real Taiwan disinformation cases
+window.QUESTION_BANK = [
+  // === 釣魚連結 / Phishing URLs ===
+  {
+    id: "phish_nhi_cn",
+    scenario_zh: "你收到簡訊：\n「您的健保卡將於72小時內停用，請至 nhi.gov.cn 重新驗證身份」",
+    scenario_en: "SMS received:\n\"Your NHI card will be suspended in 72 hrs. Verify at nhi.gov.cn\"",
+    left:  { label_zh: "點連結驗證",          label_en: "Click & verify" },
+    right: { label_zh: "直接打電話給健保署",   label_en: "Call NHI directly" },
+    correct: "right",
+    explain_zh: "台灣健保署官網是 nhi.gov.tw，.cn 是中國網域。政府機關絕不會用 .cn 網址，也不會用簡訊要你點連結驗證身份。",
+    explain_en: "Taiwan's NHI official site is nhi.gov.tw — .cn is a Chinese domain. Government agencies never use .cn URLs or SMS links to verify identity."
+  },
+  {
+    id: "phish_toiwan",
+    scenario_zh: "朋友傳來連結：\nwww.toiwan-news.com\n說是最新台海緊急軍情新聞",
+    scenario_en: "Friend sends:\nwww.toiwan-news.com\nClaims it's urgent Taiwan Strait military news",
+    left:  { label_zh: "馬上點開看",          label_en: "Click to read now" },
+    right: { label_zh: "發現拼字錯誤，不點",   label_en: "Spot the typo, don't click" },
+    correct: "right",
+    explain_zh: "toiwan 是 taiwan 的釣魚拼法，利用相似發音讓人忽略。點開前先確認網域拼字是否正確，緊急新聞可直接查 CNA、自由時報等官方媒體。",
+    explain_en: "\"toiwan\" is a phishing misspelling of \"taiwan.\" Always check domain spelling before clicking. For urgent news, go directly to CNA or other verified media outlets."
+  },
+  {
+    id: "phish_bamk",
+    scenario_zh: "收到 Email：\n「您的網路銀行帳戶異常，請登入 esunbamk.com.tw 處理」",
+    scenario_en: "Email received:\n\"Your online banking is flagged. Log in at esunbamk.com.tw\"",
+    left:  { label_zh: "點連結登入",          label_en: "Click & log in" },
+    right: { label_zh: "自己輸入銀行官網網址", label_en: "Type the real URL manually" },
+    correct: "right",
+    explain_zh: "bamk 是 bank 的拼字陷阱，視覺上容易忽略。玉山銀行真正網址是 esunbank.com.tw。任何要求點連結登入銀行的訊息都應直接輸入官網網址查證。",
+    explain_en: "\"bamk\" vs \"bank\" — easy to miss at a glance. Real ESun Bank is esunbank.com.tw. Never click login links in emails; type the official URL directly."
+  },
+  {
+    id: "phish_taivan_tax",
+    scenario_zh: "Google 搜尋「台灣財政部退稅」\n第一個廣告結果是 mof-taivan.com",
+    scenario_en: "Google search \"Taiwan MOF tax refund\"\nTop ad result: mof-taivan.com",
+    left:  { label_zh: "點廣告連結申請退稅",   label_en: "Click the ad to apply" },
+    right: { label_zh: "找 .gov.tw 的官方網站", label_en: "Find the .gov.tw official site" },
+    correct: "right",
+    explain_zh: "taivan 是 taiwan 的釣魚變體。廣告位置可以被任何人購買，排名靠前不代表是官方。台灣政府機關一律使用 .gov.tw 網域。",
+    explain_en: "\"taivan\" mimics \"taiwan.\" Anyone can buy ad placements — high ranking doesn't mean official. Taiwan government sites always use .gov.tw."
+  },
+  {
+    id: "phish_gov_tw_cn",
+    scenario_zh: "收到 LINE 訊息：\n「您有稅務未繳，請至 etax.nat.gov.tw.cn 完成繳費」",
+    scenario_en: "LINE message:\n\"Unpaid tax notice — pay at etax.nat.gov.tw.cn\"",
+    left:  { label_zh: "點連結繳費",          label_en: "Click & pay" },
+    right: { label_zh: "直接上 etax.nat.gov.tw", label_en: "Go to etax.nat.gov.tw directly" },
+    correct: "right",
+    explain_zh: "etax.nat.gov.tw.cn 看起來有 gov.tw，但真正的網域是最後的 .cn。判斷網域要從最後一個點往前讀：.cn 才是真正的頂級網域。",
+    explain_en: "The real domain is read from right to left after the last dot — .cn is the actual TLD here, not .gov.tw. The real site is etax.nat.gov.tw with nothing after it."
+  },
+  {
+    id: "phish_post_zero",
+    scenario_zh: "收到簡訊：\n「您的包裹無法投遞，請至 chunghwa-p0st.com 更新地址」",
+    scenario_en: "SMS:\n\"Package undeliverable — update address at chunghwa-p0st.com\"",
+    left:  { label_zh: "點連結更新地址",       label_en: "Click & update" },
+    right: { label_zh: "直接上中華郵政官網查", label_en: "Check post.gov.tw directly" },
+    correct: "right",
+    explain_zh: "p0st 把字母 o 換成數字 0，是常見視覺欺騙手法。中華郵政官網是 post.gov.tw，不是 .com。郵政也不會用簡訊要你點連結更新地址。",
+    explain_en: "\"p0st\" replaces the letter O with a zero — a classic visual trick. Real Chunghwa Post is post.gov.tw. They never send SMS links to update delivery addresses."
+  },
+  {
+    id: "phish_cec_taiwam",
+    scenario_zh: "選舉前收到 Email：\n「中選會投票資格驗證，請至 cec-taiwam.org 確認」",
+    scenario_en: "Pre-election email:\n\"CEC voter eligibility check — confirm at cec-taiwam.org\"",
+    left:  { label_zh: "點連結確認資格",       label_en: "Click to confirm" },
+    right: { label_zh: "只信 cec.gov.tw",      label_en: "Trust only cec.gov.tw" },
+    correct: "right",
+    explain_zh: "taiwam 是 taiwan 的拼字陷阱，m 取代 n 視覺上很難發現。中選會官網是 cec.gov.tw。選前釣魚網站目的是竊取個資或散播選舉混亂。",
+    explain_en: "\"taiwam\" swaps N for M — nearly invisible. Real CEC is cec.gov.tw. Pre-election phishing sites aim to steal personal data or sow electoral confusion."
+  },
+  {
+    id: "phish_mnd_cn",
+    scenario_zh: "同事傳來「國防部最新機密文件」連結：\nmnd-tw.com.cn/classified",
+    scenario_en: "Colleague sends \"MND classified document\" link:\nmnd-tw.com.cn/classified",
+    left:  { label_zh: "好奇點開看看",         label_en: "Click out of curiosity" },
+    right: { label_zh: "立刻通報資安人員",      label_en: "Report to security team immediately" },
+    correct: "right",
+    explain_zh: ".com.cn 是中國商業網域，國防部官網是 mnd.gov.tw。機密文件絕不會用公開連結傳送。這是針對國防人員的魚叉式釣魚攻擊（Spear Phishing）典型手法。",
+    explain_en: ".com.cn is a Chinese commercial domain. Real MND is mnd.gov.tw. Classified files are never shared via public links — this is a classic spear phishing attack targeting defense personnel."
+  },
+  {
+    id: "phish_tsmc_cn",
+    scenario_zh: "人力銀行出現職缺：\n「台積電海外擴廠招募，請將履歷寄至 hr@tsmc-careers.cn」",
+    scenario_en: "Job board listing:\n\"TSMC overseas expansion hiring — send CV to hr@tsmc-careers.cn\"",
+    left:  { label_zh: "寄出履歷",            label_en: "Send your CV" },
+    right: { label_zh: "到台積電官網確認招募管道", label_en: "Verify via tsmc.com careers page" },
+    correct: "right",
+    explain_zh: "台積電官方招募透過 tsmc.com，不會用 .cn 信箱收履歷。履歷含個資，寄錯對象可能造成資料外洩，也可能是針對半導體人才的情報蒐集行動。",
+    explain_en: "TSMC recruits via tsmc.com only — never a .cn email. Sending your CV here risks data theft and may be an intelligence-gathering operation targeting semiconductor talent."
+  },
+  {
+    id: "phish_ltn_one",
+    scenario_zh: "查核新聞時，來源網址是：\nwww.1iberty-times.com",
+    scenario_en: "Fact-checking a news story — source URL:\nwww.1iberty-times.com",
+    left:  { label_zh: "看起來像自由時報，信任內容", label_en: "Looks like LTN, trust it" },
+    right: { label_zh: "發現數字1取代字母l，不信任",  label_en: "Spot 1 vs l trick, don't trust" },
+    correct: "right",
+    explain_zh: "把小寫字母 l 換成數字 1，在某些字型下幾乎一模一樣。自由時報官網是 ltn.com.tw。查核新聞要直接去媒體官網搜尋，不要只看連結表面。",
+    explain_en: "Replacing lowercase L with the number 1 is nearly invisible in many fonts. Real Liberty Times is ltn.com.tw. Always verify news at the outlet's official site, not just the URL."
+  },
+  // === 認知作戰 / Influence Operations ===
+  {
+    id: "bot_trending",
+    scenario_zh: "PTT/X 一夜爆紅貼文：\n10 萬讚、留言一面倒、帳號都新註冊、頭像都是風景照",
+    scenario_en: "Overnight viral post on PTT/X:\n100k likes, one-sided comments, all new accounts, all landscape avatars",
+    left:  { label_zh: "民意如此，跟風轉發",   label_en: "Looks like public opinion, share it" },
+    right: { label_zh: "懷疑是機器人帶風向",   label_en: "Suspect coordinated bot activity" },
+    correct: "right",
+    explain_zh: "新帳號 + 風景頭像 + 一致話術 = 協同造假（Coordinated Inauthentic Behavior）經典特徵。台灣已多次發現境外帳號群在重大議題上製造「主流民意」假象。",
+    explain_en: "New accounts + landscape avatars + uniform messaging = classic Coordinated Inauthentic Behavior. Taiwan has repeatedly identified foreign bot networks fabricating false \"public consensus\" on key issues."
+  },
+  {
+    id: "ai_deepfake_official",
+    scenario_zh: "影片中「總統」宣布：\n「即日起全民發放 6 萬元，請點連結登記」",
+    scenario_en: "Video of \"President\" announces:\n\"NT$60,000 cash for all citizens — register at this link\"",
+    left:  { label_zh: "點連結登記領錢",       label_en: "Register to claim" },
+    right: { label_zh: "查總統府官方公告",      label_en: "Check Presidential Office website" },
+    correct: "right",
+    explain_zh: "Deepfake 已能仿造任何政要的臉與聲音。政府發放補助一定有正式公告（總統府、行政院官網）。任何要求點連結登記個資的「政府影片」幾乎都是釣魚。",
+    explain_en: "Deepfakes can now impersonate any official convincingly. Real government payouts are announced on official portals. Any video asking you to register personal data via a link is almost certainly a phishing attempt."
+  },
+  {
+    id: "election_fraud_video",
+    scenario_zh: "選前一晚瘋傳：\n「監視器拍到開票所換票！」\n畫面模糊、無時間戳、無地點",
+    scenario_en: "Night before election, viral clip:\n\"CCTV caught ballot-swapping!\"\nBlurry, no timestamp, no location shown",
+    left:  { label_zh: "立刻轉傳警告大家",     label_en: "Forward immediately to warn people" },
+    right: { label_zh: "等 Cofacts 查證再說",   label_en: "Wait for Cofacts verification" },
+    correct: "right",
+    explain_zh: "選前夜的「震撼影片」是資訊作戰的經典時機——讓查證來不及。Cofacts 在歷屆選舉中已查獲多起：實際是舊片、他國畫面或剪輯誤導。",
+    explain_en: "Pre-election \"bombshell videos\" are a classic info-op timing exploit — no time to verify. Cofacts has caught many such clips across past elections: old footage, foreign events, or misleading edits."
+  },
+  {
+    id: "wrong_chat_invest",
+    scenario_zh: "陌生人加 LINE：\n「抱歉加錯，但我老師有飆股群組，要不要試試？」",
+    scenario_en: "Stranger adds you on LINE:\n\"Sorry wrong number, but my mentor has a hot-stock group — interested?\"",
+    left:  { label_zh: "好奇加入看看",         label_en: "Join out of curiosity" },
+    right: { label_zh: "封鎖並刪除",           label_en: "Block & delete" },
+    correct: "right",
+    explain_zh: "「加錯人」是 165 反詐騙專線記錄最多的開場白。後續套路：假老師、假助理、假投資 App、前幾次小賺讓你加碼，最後出金失敗。每年造成台灣數十億損失。",
+    explain_en: "\"Wrong number\" is the most common scam opener on Taiwan's 165 anti-fraud hotline. The playbook: fake mentor → fake app → small wins → big deposit → withdrawal blocked. Costs Taiwan billions annually."
+  },
+  {
+    id: "linkedin_spearphish",
+    scenario_zh: "LinkedIn 訊息：\n「您好，我是某智庫研究員，想邀請您參加線上座談並分享您的資安研究成果」",
+    scenario_en: "LinkedIn message:\n\"Hi, I'm a think-tank researcher — would you join our online forum and share your cybersecurity research?\"",
+    left:  { label_zh: "接受邀請，分享研究",   label_en: "Accept and share research" },
+    right: { label_zh: "先查證對方身份與機構",  label_en: "Verify identity and institution first" },
+    correct: "right",
+    explain_zh: "CCP 相關影響力行動常透過 LinkedIn 接觸資安、政策、國防領域專業人士。美國 FBI 與台灣調查局均記錄多起案例。邀請座談前應查證機構官網、確認邀請者真實存在。",
+    explain_en: "CCP-linked influence operations frequently use LinkedIn to approach cybersecurity, policy, and defense professionals. The FBI and Taiwan's Investigation Bureau have documented many such cases. Always verify the institution and the person independently."
+  },
+  {
+    id: "democracy_corrupt",
+    scenario_zh: "短影音宣稱：\n「民主就是亂，貪污比集權還嚴重，看數據！」\n配上來源不明的圖表",
+    scenario_en: "Short video claims:\n\"Democracy = chaos, more corrupt than authoritarianism!\"\nWith unsourced chart",
+    left:  { label_zh: "轉發給家人警惕",       label_en: "Forward to warn family" },
+    right: { label_zh: "查證數據原始來源",      label_en: "Verify the original data source" },
+    correct: "right",
+    explain_zh: "感性語言 + 無來源圖表是境外認知作戰的標準套路，目的是動搖對民主制度的信任。國際透明組織清廉指數（CPI）顯示民主國家排名普遍遠高於集權國家。",
+    explain_en: "Emotional language + unsourced charts are standard foreign influence op tactics designed to erode trust in democracy. Transparency International's CPI consistently ranks democracies far above authoritarian states."
+  },
+  {
+    id: "miracle_supplement",
+    scenario_zh: "Facebook 廣告：\n「衛福部認證！神奇減肥糖，一個月瘦 20 公斤」",
+    scenario_en: "Facebook ad:\n\"MOHW-certified! Miracle diet candy — lose 20kg in a month\"",
+    left:  { label_zh: "限時優惠，快買",        label_en: "Limited offer, buy now" },
+    right: { label_zh: "查食藥署資料庫",        label_en: "Check Taiwan FDA database" },
+    correct: "right",
+    explain_zh: "衛福部從不為「減肥糖」背書。可上食藥署消費者知識服務網查證任何宣稱認證的產品。一個月瘦 20 公斤已超出醫學安全範圍，這類廣告多為詐騙。",
+    explain_en: "MOHW never endorses \"miracle\" diet products. Check any \"certified\" claim on the Taiwan FDA consumer portal. 20kg/month far exceeds safe medical limits — these ads are almost always fraudulent."
+  },
+  {
+    id: "qr_parking_ticket",
+    scenario_zh: "車上夾著一張「違規停車單」\n要你掃 QR Code 線上繳費",
+    scenario_en: "\"Parking ticket\" left on your windshield\nasking you to scan QR code to pay online",
+    left:  { label_zh: "掃碼快點繳清",         label_en: "Scan & pay quickly" },
+    right: { label_zh: "上監理服務網查詢",      label_en: "Check Taiwan MVD official site" },
+    correct: "right",
+    explain_zh: "真正的罰單會寄到戶籍地址，不會夾在車上要你掃 QR。假罰單 QR 連到釣魚頁面竊取信用卡資料。所有罰款請至監理服務網或郵局查證。",
+    explain_en: "Real tickets are mailed to your registered address — never left on your car with a QR code. Fake ticket QRs lead to phishing pages that steal card data. Always verify via the official MVD portal."
+  },
+  {
+    id: "china_invest",
+    scenario_zh: "LINE 訊息：\n「台灣青年到中國發展！政府補助 200 萬創業金，保證成功」",
+    scenario_en: "LINE message:\n\"Taiwan youth — develop in China! NT$2M startup grant, guaranteed success\"",
+    left:  { label_zh: "報名了解詳情",         label_en: "Sign up for details" },
+    right: { label_zh: "懷疑是統戰話術",       label_en: "Recognize as possible united-front tactic" },
+    correct: "right",
+    explain_zh: "「保證成功」+ 大額補助 = 統戰紅旗。實際案例：台灣青年赴中後護照遭沒收、被迫加入詐騙集團或被要求政治表態。陸委會多次發出警示。",
+    explain_en: "\"Guaranteed success\" + large subsidy = united-front red flag. Documented cases: Taiwanese youth had passports confiscated, were coerced into scam operations or political statements. Taiwan's MAC has repeatedly issued warnings."
+  },
+  {
+    id: "yt_health_miracle",
+    scenario_zh: "YouTube 影片：\n「醫生不告訴你！每天喝這個，三天清光血栓」\nAI 配音 + 名醫照片",
+    scenario_en: "YouTube video:\n\"Doctors hide this! Drink daily, clears blood clots in 3 days\"\nAI voice + stolen doctor photo",
+    left:  { label_zh: "分享到家族群組",       label_en: "Share to family group chat" },
+    right: { label_zh: "略過並向 YouTube 檢舉", label_en: "Skip & report to YouTube" },
+    correct: "right",
+    explain_zh: "這類影片盜用名醫照片、使用 AI 合成聲音、以「醫生不告訴你」製造緊迫感。Cofacts 已多次查證為假。原則：能三天治好的療法，諾貝爾獎早就頒出去了。",
+    explain_en: "These videos steal doctor photos, use AI-generated voices, and exploit \"doctors hide this\" urgency framing. Cofacts has debunked many. Rule: if a 3-day cure existed, it would have won a Nobel Prize."
+  },
+  // === 新增題目：社群謠言 / Viral Disinfo ===
+  {
+    id: "chiang_coffin",
+    scenario_zh: "社群瘋傳：\n「蔣家第四代蔣友松要把蔣介石、蔣經國的棺材強行從台灣搬回中國！」",
+    scenario_en: "Viral post:\n\"4th-generation Chiang Yu-sung plans to forcibly move Chiang Kai-shek and Chiang Ching-kuo's coffins from Taiwan to China!\"",
+    left:  { label_zh: "驚！立刻轉發",         label_en: "Shocking! Share immediately" },
+    right: { label_zh: "查證新聞原始報導",      label_en: "Find the original news source" },
+    correct: "right",
+    explain_zh: "「強行」「狠話」等煽情用字是操弄標誌。蔣友松確實曾提及遷葬意願，但「強行」是媒體誇大或故意扭曲。轉發前先找原始報導，確認引號內的話是否真實存在。",
+    explain_en: "Words like \"forcibly\" and \"hard line\" are emotional amplifiers — a manipulation red flag. Chiang Yu-sung did mention reburial wishes, but \"forcibly\" was media exaggeration or distortion. Always find the original quote before sharing."
+  },
+  {
+    id: "potato_toxin",
+    scenario_zh: "LINE 群組訊息：\n「發芽馬鈴薯含龍葵鹼，吃三顆就會致死！美國馬鈴薯現在可以直送台灣了！」",
+    scenario_en: "LINE group message:\n\"Sprouted potatoes contain solanine — eating 3 will kill you! US potatoes can now be shipped directly to Taiwan!\"",
+    left:  { label_zh: "警告家人不要吃馬鈴薯",  label_en: "Warn family to avoid potatoes" },
+    right: { label_zh: "查食藥署實際標準",      label_en: "Check Taiwan FDA actual standards" },
+    correct: "right",
+    explain_zh: "龍葵鹼確實存在，但「吃三顆致死」嚴重誇大。食藥署標準是龍葵鹼含量不得超過200mg/kg，而非零容忍。這則訊息混合了真實資訊與誇大恐慌，是常見的食安謠言套路。",
+    explain_en: "Solanine is real, but \"3 potatoes = death\" is a massive exaggeration. Taiwan FDA's limit is 200mg/kg, not zero tolerance. This message blends real facts with manufactured panic — a classic food safety disinfo tactic."
+  },
+  {
+    id: "kmt_subsidy",
+    scenario_zh: "Facebook 貼文：\n「不能花480萬給國民黨改善兩岸關係，但民進黨每年花十幾億養非洲獨裁者？」",
+    scenario_en: "Facebook post:\n\"Can't spend NT$4.8M helping KMT improve cross-strait ties, but DPP spends billions annually supporting African dictators?\"",
+    left:  { label_zh: "政府真的很雙標！轉發",   label_en: "Double standard! Share this" },
+    right: { label_zh: "查邦交援助預算實際用途", label_en: "Check actual diplomatic aid budget" },
+    correct: "right",
+    explain_zh: "這則貼文把兩件性質完全不同的事並排比較，製造「雙標」印象。台灣的邦交援助有正式預算監督機制。比較框架（A不行但B可以）是常見認知操弄手法，需分開查證每個主張。",
+    explain_en: "This post pairs two unrelated items to manufacture a false \"double standard.\" Taiwan's diplomatic aid has formal budget oversight. The comparison framing technique (\"can't do A but can do B\") is a classic manipulation tactic — each claim needs separate verification."
+  },
+  {
+    id: "abandon_taiwan",
+    scenario_zh: "社群瘋傳：\n「美國最大規模對台軍售已停擺，白痴才把錢送美國，美國遲早出賣台灣，我們只是棋子」",
+    scenario_en: "Viral post:\n\"Largest-ever US arms sale to Taiwan has stalled — only fools send money to the US. America will sell out Taiwan eventually; we're just a pawn.\"",
+    left:  { label_zh: "美國果然不可信！轉發",   label_en: "America can't be trusted! Share" },
+    right: { label_zh: "查軍售現況與多方報導",   label_en: "Check arms sale status from multiple sources" },
+    correct: "right",
+    explain_zh: "「棄台論」是 CCP 對台資訊作戰的核心敘事之一，目的是瓦解台灣對美信任、動搖防衛意志。軍售延遲有複雜的行政與技術因素，與「出賣台灣」是完全不同的概念。",
+    explain_en: "\"Abandonment narrative\" is a core CCP info-op tactic targeting Taiwan, designed to erode US-Taiwan trust and undermine defense will. Arms delivery delays involve complex administrative and technical factors — very different from \"selling out Taiwan.\""
+  },
+  {
+    id: "taiwan_hollowing",
+    scenario_zh: "貼文：\n「2026年起台灣經濟快速衰退，科技城市房價崩盤，台灣正在被慢慢掏空」",
+    scenario_en: "Post:\n\"Starting 2026, Taiwan's economy will rapidly decline, tech city housing will collapse — Taiwan is being slowly hollowed out.\"",
+    left:  { label_zh: "台灣沒救了，認同轉發",   label_en: "Taiwan is doomed, share this" },
+    right: { label_zh: "查經濟數據與專業預測",   label_en: "Check economic data and expert forecasts" },
+    correct: "right",
+    explain_zh: "「掏空」「快速衰退」「崩盤」都是情緒化斷言，缺乏具體數據支撐。這類末日敘事是認知作戰常用工具，目的是製造悲觀情緒、降低社會韌性。查主計總處、央行等官方經濟數據再判斷。",
+    explain_en: "\"Hollowing out,\" \"rapid decline,\" and \"collapse\" are emotional assertions without data. Doomsday narratives are standard cognitive warfare tools designed to manufacture pessimism and reduce social resilience. Check DGBAS, CBC, and IMF data before drawing conclusions."
+  },
+  {
+    id: "bullet_corruption",
+    scenario_zh: "貼文：\n「民進黨貪污！國防部15億子彈標案，自製6元卻向外購買18元，到底誰A走了？」",
+    scenario_en: "Post:\n\"DPP corruption! MND NT$1.5B bullet tender — domestically made costs NT$6 but they buy at NT$18. Who pocketed the difference?\"",
+    left:  { label_zh: "政府真的在貪污！轉發",   label_en: "Government is corrupt! Share" },
+    right: { label_zh: "查標案原始公文與比價依據", label_en: "Check original tender documents and pricing basis" },
+    correct: "right",
+    explain_zh: "價差指控需要查原始標案文件。不同規格、品質、產能的彈藥成本差異很大。「自製6元」vs「外購18元」若未說明規格，數字對比毫無意義。貪污指控應以調查結果為準，不能只看社群貼文。",
+    explain_en: "Price difference claims require original procurement documents. Ammunition costs vary enormously by spec, quality, and capacity. Without specification details, the NT$6 vs NT$18 comparison is meaningless. Corruption allegations require verified investigation results, not social media posts."
+  },
+  {
+    id: "takaichi_grandfather",
+    scenario_zh: "訊息：\n「日本首相高市早苗的祖父高市利彥，是屠殺中國人的特別殘忍陸軍少佐」",
+    scenario_en: "Message:\n\"Japanese PM Takaichi Sanae's grandfather, Takaichi Toshihiko, was a notoriously brutal Army Major who massacred Chinese people.\"",
+    left:  { label_zh: "日本政客果然有問題！轉發", label_en: "Typical Japanese politician! Share" },
+    right: { label_zh: "查這個人是否真實存在",    label_en: "Verify if this person actually exists" },
+    correct: "right",
+    explain_zh: "這則訊息經多方查證為捏造：找不到「高市利彥」的任何歷史記錄。以捏造的家族罪行污名化政治人物，是典型的歷史操弄手法，常見於針對日台關係的認知作戰。",
+    explain_en: "This claim has been fact-checked as fabricated — no historical record of \"Takaichi Toshihiko\" exists. Smearing politicians with invented ancestral crimes is a classic historical manipulation tactic, commonly used in info-ops targeting Japan-Taiwan relations."
+  },
+  {
+    id: "defense_budget",
+    scenario_zh: "貼文：\n「賴清德追加1.25兆國防預算！F-16買了2400億一架都沒交，烏克蘭打三年死百萬被逼談判，我們要重蹈覆轍？」",
+    scenario_en: "Post:\n\"Lai adds NT$1.25T defense budget! NT$240B for F-16s and zero delivered. Ukraine fought 3 years, lost millions, forced to negotiate. Is Taiwan next?\"",
+    left:  { label_zh: "台灣會變烏克蘭！轉發",   label_en: "Taiwan will become Ukraine! Share" },
+    right: { label_zh: "分開查證每項主張",       label_en: "Verify each claim separately" },
+    correct: "right",
+    explain_zh: "這則貼文將多個議題混合，製造恐慌。F-16交機有既定時程（台美雙方均有公開說明）。烏克蘭類比是常見的反防衛敘事，目的是讓台灣人放棄自我防衛意志。每個主張應分開查證。",
+    explain_en: "This post bundles multiple issues to manufacture panic. F-16 delivery follows a set schedule (documented by both sides). The Ukraine analogy is a common anti-defense narrative designed to erode Taiwan's will to defend itself. Verify each claim independently."
+  },
+  {
+    id: "lai_private_son",
+    scenario_zh: "訊息瘋傳：\n「賴清德有私生子！養小三莊雅芬、生了賴庭瀚，全世界都知道了」",
+    scenario_en: "Viral message:\n\"Lai Ching-te has an illegitimate son! Kept a mistress named Chuang Ya-fen, fathered Lai Ting-han — the whole world knows!\"",
+    left:  { label_zh: "全世界都知道了！轉發",   label_en: "The whole world knows! Share" },
+    right: { label_zh: "查有無可信媒體報導",     label_en: "Check for credible media reports" },
+    correct: "right",
+    explain_zh: "「全世界都知道」是謠言常用的虛假共識手法。這類政治人物私生活指控若屬實，必有正式媒體報導與法律訴訟。沒有可查證來源的個人攻擊，是選舉期間認知作戰的標準操作。",
+    explain_en: "\"The whole world knows\" is a classic false consensus technique used in rumors. If true, such allegations would generate formal media coverage and legal proceedings. Unverifiable personal attacks are standard cognitive warfare tactics during election cycles."
+  },
+  {
+    id: "india_workers",
+    scenario_zh: "貼文：\n「印度移工要來台十萬人！台灣人+印度人=高級詐騙+駭客，慘！」",
+    scenario_en: "Post:\n\"100,000 Indian migrant workers coming to Taiwan! Taiwanese + Indians = high-end scams + hackers. Disaster!\"",
+    left:  { label_zh: "台灣太危險了！轉發",     label_en: "Taiwan is doomed! Share" },
+    right: { label_zh: "認出這是族裔歧視謠言",   label_en: "Recognize this as ethnic stereotyping" },
+    correct: "right",
+    explain_zh: "將整個國籍群體與犯罪畫上等號，是種族歧視謠言。台印勞工協議有正式談判過程與審查機制。用族裔恐慌製造社會對立，是分化台灣社會的常見操弄手法。",
+    explain_en: "Equating an entire nationality with crime is ethnic stereotyping and misinformation. Taiwan-India labor agreements undergo formal negotiation and review. Using ethnic panic to manufacture social division is a common tactic for fragmenting Taiwanese society."
+  },
+  {
+    id: "hamas_israel_cia",
+    scenario_zh: "訊息：\n「對以色列發動攻擊的哈馬斯，其實是以色列跟 CIA 為了對付阿拉法特而專門培養的」",
+    scenario_en: "Message:\n\"Hamas, which attacked Israel, was actually created by Israel and the CIA specifically to counter Arafat.\"",
+    left:  { label_zh: "陰謀論有道理！轉發",     label_en: "Conspiracy theory makes sense! Share" },
+    right: { label_zh: "查哈馬斯的真實歷史",     label_en: "Research Hamas's actual history" },
+    correct: "right",
+    explain_zh: "以色列早期確曾允許哈馬斯前身活動以制衡 PLO，但「CIA 培養」是嚴重扭曲。哈馬斯是伊斯蘭主義運動，有其獨立的意識形態根源。將複雜歷史簡化為陰謀論，是認知作戰常用手法。",
+    explain_en: "Israel did allow Hamas's precursor group to operate as a counterweight to the PLO early on, but \"CIA created\" is a major distortion. Hamas is an Islamist movement with independent ideological roots. Collapsing complex history into conspiracy is a standard disinfo technique."
+  },
+  {
+    id: "laikejin_sausage",
+    scenario_zh: "貼文：\n「美國萊豬在台灣屠宰就變台灣豬！巴西蛋加醬油變台灣蛋！核食毒不死再進過期蛋，台灣人欠民進黨什麼？」",
+    scenario_en: "Post:\n\"US ractopamine pork slaughtered in Taiwan becomes 'Taiwan pork'! Brazilian eggs with soy sauce become 'Taiwan eggs'! First nuclear food, now expired eggs — what do Taiwanese people owe the DPP?\"",
+    left:  { label_zh: "食安黑幕！憤怒轉發",     label_en: "Food safety scandal! Share in anger" },
+    right: { label_zh: "分開查每項食安標準",     label_en: "Check each food safety claim separately" },
+    correct: "right",
+    explain_zh: "這則貼文把多個不同時期的食安爭議混在一起，製造「累積憤怒」效果。萊豬、日本食品、進口蛋各有不同的法規與查驗機制。查食藥署公告與立法院質詢記錄，比社群貼文可靠得多。",
+    explain_en: "This post bundles multiple food safety controversies from different periods to accumulate outrage. Ractopamine pork, Japanese food, and imported eggs each have separate regulations and inspection regimes. Check TFDA announcements and Legislative Yuan records rather than social posts."
+  },
+  {
+    id: "nhi_cancelled",
+    scenario_zh: "訊息：\n「中國國台辦聲明：統一後取消台灣健保、停止軍公教年金、停止長照社福、取消存款保險」",
+    scenario_en: "Message:\n\"China's TAO statement: after unification, Taiwan's NHI, military/civil service pensions, long-term care, and deposit insurance will all be abolished.\"",
+    left:  { label_zh: "統一太可怕！轉發警告",   label_en: "Unification is terrifying! Share warning" },
+    right: { label_zh: "查國台辦是否真的說過這些", label_en: "Verify if TAO actually said this" },
+    correct: "right",
+    explain_zh: "這則訊息聲稱引用「國台辦聲明」，但找不到任何原始出處。即使恐嚇內容符合直覺，引用虛假聲明反而削弱可信度。查國台辦官網或新聞稿確認原文，再決定是否轉發。",
+    explain_en: "This message claims to quote a \"TAO statement\" but no original source exists. Even if the content feels plausible, citing fabricated statements undermines credibility. Check the TAO official site or press releases for the original text before sharing."
+  },
+  {
+    id: "one_life_one_election",
+    scenario_zh: "貼文：\n「生命只有一次，總統再選就有。何必打仗戰爭，請為台灣後代子孫謀求基本的安全。」",
+    scenario_en: "Post:\n\"Life only comes once, but there will always be another president. Why fight a war? Please seek basic safety for Taiwan's future generations.\"",
+    left:  { label_zh: "說得對！和平優先，轉發",  label_en: "So true! Peace first, share it" },
+    right: { label_zh: "認出這是以和平包裝的放棄論", label_en: "Recognize this as surrender framed as peace" },
+    correct: "right",
+    explain_zh: "這則貼文用「和平」與「下一代」等情感訴求，實質上是要求放棄防衛意志。「打仗 vs 不打仗」的二元框架刻意忽略了嚇阻力、外交手段等選項。這是 CCP 對台資訊作戰的核心話術之一。",
+    explain_en: "This post uses \"peace\" and \"future generations\" as emotional hooks to effectively advocate abandoning defense. The binary \"fight or don't fight\" frame deliberately omits deterrence, diplomacy, and other options — a core CCP narrative targeting Taiwan's defense will."
+  },
+  {
+    id: "ukraine_puppet",
+    scenario_zh: "貼文：\n「烏克蘭蠢民選了美國傀儡澤倫斯基，美國坐收漁利，烏克蘭小孩成孤兒，城市變廢墟」",
+    scenario_en: "Post:\n\"Ukrainian fools elected US puppet Zelensky. America profits while Ukrainian children become orphans and cities turn to rubble.\"",
+    left:  { label_zh: "美國害了烏克蘭！轉發",   label_en: "America destroyed Ukraine! Share" },
+    right: { label_zh: "認出這是俄羅斯敘事框架",  label_en: "Recognize this as a Russian narrative frame" },
+    correct: "right",
+    explain_zh: "這則貼文的敘事框架與俄羅斯官方宣傳高度吻合：把侵略者的責任轉嫁給被害者與美國。「傀儡」說法抹去烏克蘭人民的自主意志。同樣的框架也被用於台灣，指台灣是美國棋子。",
+    explain_en: "This narrative frame closely mirrors Russian state propaganda: shifting responsibility from the aggressor to the victim and the US. The \"puppet\" framing erases Ukrainian agency. The same template is applied to Taiwan — framing it as an American pawn."
+  },
+  {
+    id: "putin_un_taiwan",
+    scenario_zh: "訊息：\n「普京在東方經濟論壇支持中國處理台灣問題，並暗示可提供『非常規支持』。東南亞國家在東盟會議也呼籲美國停止將台海軍事化」",
+    scenario_en: "Message:\n\"Putin at EEF supports China on Taiwan, hints at 'unconventional support.' ASEAN leaders at recent summit called on US to stop militarizing Taiwan Strait.\"",
+    left:  { label_zh: "國際都反美！台灣要重新考慮", label_en: "World is anti-US! Taiwan should reconsider" },
+    right: { label_zh: "查東盟與普京的原始發言",   label_en: "Find original ASEAN and Putin statements" },
+    correct: "right",
+    explain_zh: "這則訊息混合了真實事件（普京確曾發言）與捏造內容（東盟一致反美說法）。查 ASEAN 公報原文——實際上東盟對台海立場更為複雜。混合真假訊息是最難識破的操弄手法之一。",
+    explain_en: "This message blends real events (Putin did speak) with fabricated content (ASEAN \"unanimously\" anti-US claim). Read the actual ASEAN communiqué — their position on the Taiwan Strait is far more nuanced. Mixing true and false is one of the hardest manipulation techniques to detect."
+  },
+  {
+    id: "tsmc_trump",
+    scenario_zh: "貼文：\n「川普要用美國建築工人蓋台積電，把技術納為己有供應英特爾，已把亞利桑那州台灣人全部遣返了」",
+    scenario_en: "Post:\n\"Trump wants US construction workers for TSMC, plans to absorb the technology for Intel, has already sent all Taiwanese workers in Arizona back home.\"",
+    left:  { label_zh: "美國要搶台積電技術！轉發", label_en: "US stealing TSMC tech! Share" },
+    right: { label_zh: "查 TSMC 亞利桑那廠實際現況", label_en: "Check actual TSMC Arizona status" },
+    correct: "right",
+    explain_zh: "這則貼文混合了部分真實（川普確曾表達對建廠的意見）與誇大捏造（「全部遣返」是假的）。台積電亞利桑那廠仍在運作，有官方公告可查。疑美論操作常用「部分真實+大量誇大」的手法。",
+    explain_en: "This post mixes partial truth (Trump did comment on construction) with fabrication (\"all sent back\" is false). TSMC Arizona continues operations — check official announcements. Anti-US narratives frequently use the \"partial truth + heavy exaggeration\" technique."
+  },
+  {
+    id: "russia_jewish_ukraine",
+    scenario_zh: "訊息：\n「俄羅斯發現猶太人想在烏克蘭建國，把烏克蘭人打死正好給以色列人騰地方」",
+    scenario_en: "Message:\n\"Russia discovered Jews want to establish a state in Ukraine — killing Ukrainians clears land for Israel to build a new state there.\"",
+    left:  { label_zh: "陰謀論有道理！轉發",     label_en: "This conspiracy makes sense! Share" },
+    right: { label_zh: "認出這是反猶太陰謀論",   label_en: "Recognize this as antisemitic conspiracy theory" },
+    correct: "right",
+    explain_zh: "這是將反猶太主義與俄烏戰爭混合的陰謀論，沒有任何事實依據。澤倫斯基本人是猶太裔，其家人在二戰中曾遭納粹迫害。這類訊息是俄羅斯資訊戰的典型輸出內容。",
+    explain_en: "This is an antisemitic conspiracy theory with zero factual basis. Zelensky himself is Jewish, with family members killed by Nazis in WWII. This type of content is a typical output of Russian information warfare operations."
+  },
+  {
+    id: "china_elder_robot",
+    scenario_zh: "影片：\n「北京海淀700戶老人每人收到養老機器人，可完成所有家務、精準識別情緒、感知身體不適」",
+    scenario_en: "Video:\n\"700 Beijing Haidian elderly households each received a care robot that handles all housework, detects emotions accurately, and senses physical discomfort.\"",
+    left:  { label_zh: "中國科技真強！轉發羨慕",  label_en: "China's tech is amazing! Share with envy" },
+    right: { label_zh: "查這個計劃是否真實存在",  label_en: "Verify if this program actually exists" },
+    correct: "right",
+    explain_zh: "這類「中國科技盛世」影片常誇大或捏造細節，目的是製造「中國模式優越」的印象。「完成所有家務、精準識別情緒」的描述遠超現有機器人技術水平。查原始新聞來源與技術規格再判斷。",
+    explain_en: "\"China tech utopia\" videos often exaggerate or fabricate details to promote the image of Chinese model superiority. \"All housework + precise emotion detection\" far exceeds current robotics capabilities. Check original sources and tech specs before sharing."
+  },
+  {
+    id: "us_obsolete_weapons",
+    scenario_zh: "訊息：\n「美國法律規定只能供應台灣過期武器，因為知道打不贏，要避免新式武器落入共軍之手，台灣年輕人的血肉換制裁」",
+    scenario_en: "Message:\n\"US law mandates only obsolete weapons for Taiwan — they know Taiwan can't win and don't want advanced weapons captured. Taiwan's youth are cannon fodder for sanctions.\"",
+    left:  { label_zh: "美國把台灣當棄子！轉發",  label_en: "US treats Taiwan as expendable! Share" },
+    right: { label_zh: "查《台灣關係法》實際條文", label_en: "Read the actual Taiwan Relations Act" },
+    correct: "right",
+    explain_zh: "《台灣關係法》並無「只能供應過期武器」的規定，原文是提供「防禦性武器」（defensive arms）。這則訊息故意曲解法律用語，是「棄台論」敘事的變體，目的是瓦解台灣的防衛信心。",
+    explain_en: "The Taiwan Relations Act does not mandate \"obsolete\" weapons — it specifies \"defensive arms.\" This message deliberately mistranslates legal language. It's a variant of the \"abandonment narrative\" designed to undermine Taiwan's confidence in its defense."
+  },
+  {
+    id: "ukraine_55plus",
+    scenario_zh: "貼文：\n「烏克蘭年輕人都打光了！後來招的軍人都超過55歲，勞軍活動上沒人有笑容，美國繼續畫大餅拱火北約」",
+    scenario_en: "Post:\n\"Ukraine's young people are all gone! Newly drafted soldiers are all over 55, no one smiling at sendoff events. US keeps dangling NATO membership to fan the flames.\"",
+    left:  { label_zh: "戰爭太悲慘了！轉發",     label_en: "War is too tragic! Share" },
+    right: { label_zh: "查烏克蘭徵兵實際年齡規定", label_en: "Check Ukraine's actual conscription age rules" },
+    correct: "right",
+    explain_zh: "烏克蘭確實面臨兵員壓力，但「都超過55歲」是誇大。烏克蘭徵兵年齡下限曾調降至25歲，並非55歲以上。用真實的戰爭悲劇包裝誇大數字，是讓謠言更難識破的常見手法。",
+    explain_en: "Ukraine does face manpower pressure, but \"all over 55\" is an exaggeration. Ukraine lowered its conscription age floor to 25, not 55+. Wrapping exaggerated numbers in real wartime tragedy is a common technique that makes disinformation harder to detect."
+  },
+  {
+    id: "california_sb553",
+    scenario_zh: "訊息：\n「加州剛通過 SB553，商家和顧客不得阻礙打砸搶偷，違者罰款18000美元！加州人遇到偷盜請高舉雙手」",
+    scenario_en: "Message:\n\"California just passed SB553 — merchants and customers cannot stop theft or looting, violators fined $18,000! Californians: hands up when robbed!\"",
+    left:  { label_zh: "美國真的完了！轉發嘲笑",  label_en: "America is done! Share and mock" },
+    right: { label_zh: "查 SB553 的真正內容",     label_en: "Read what SB553 actually says" },
+    correct: "right",
+    explain_zh: "SB553 是工作場所安全法，規定雇主不得強迫員工以人身阻擋竊賊（保護員工安全），與「不得阻礙打砸搶」完全相反。這是故意曲解立法意圖的典型案例，常見於抹黑美國民主制度的敘事。",
+    explain_en: "SB553 is a workplace safety law preventing employers from requiring employees to physically confront shoplifters — the opposite of \"can't stop theft.\" This is a textbook case of deliberate legislative misrepresentation, commonly used in narratives undermining US democratic institutions."
+  },
+  {
+    id: "nuclear_fish_japan",
+    scenario_zh: "LINE 訊息：\n「日本要運2萬隻核廢水的魚進口台灣了！別國都不要，中港澳拒絕，所以台灣要收？」",
+    scenario_en: "LINE message:\n\"Japan is shipping 20,000 'nuclear wastewater fish' to Taiwan! No other country wants them — China, HK, Macau refused, so Taiwan has to take them?\"",
+    left:  { label_zh: "核食危機！警告家人別吃魚", label_en: "Nuclear food crisis! Warn family off fish" },
+    right: { label_zh: "查食藥署日本食品檢驗結果", label_en: "Check Taiwan FDA Japanese food test results" },
+    correct: "right",
+    explain_zh: "「核廢水的魚」混淆了 ALPS 處理水排放與食品安全兩個概念。台灣食藥署對進口日本食品有獨立檢驗機制。中國禁止日本水產是政治決定，與食安無關。這則訊息是核食恐慌謠言的變體。",
+    explain_en: "\"Nuclear wastewater fish\" conflates ALPS treated water discharge with food safety — two separate issues. Taiwan FDA independently tests Japanese food imports. China's ban on Japanese seafood is a political decision, not a safety one. This is a variant of nuclear food panic disinformation."
+  },
+  {
+    id: "toxic_mosquito_drones",
+    scenario_zh: "訊息：\n「俄羅斯向聯合國舉報：美國用無人機投放帶編號的毒蚊子消滅自然界蚊子，這些生物炸彈一旦進入國門後果不堪設想」",
+    scenario_en: "Message:\n\"Russia reported to UN: US using drones to release numbered toxic mosquitoes to eliminate natural mosquitoes — once these biological bombs cross borders, consequences are unimaginable.\"",
+    left:  { label_zh: "生化武器！恐怖！轉發警告", label_en: "Bio-weapons! Terrifying! Share warning" },
+    right: { label_zh: "認出這是俄羅斯官方宣傳",  label_en: "Recognize this as Russian state propaganda" },
+    correct: "right",
+    explain_zh: "俄羅斯多次在聯合國提出美國生物武器指控，均遭駁回且無證據支持。「帶編號的蚊子」是設計來引發恐慌的細節。這類生物武器陰謀論是俄羅斯資訊戰的標準輸出，也常被用來轉移烏克蘭戰爭的注意力。",
+    explain_en: "Russia has repeatedly made US bioweapons allegations at the UN — all rejected, none substantiated. \"Numbered mosquitoes\" is a panic-inducing fabricated detail. Bioweapon conspiracy theories are standard Russian info-op output, often used to distract from the Ukraine war."
+  }
+];
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const SCENE = {
+  TITLE: 'title',
+  QUESTION: 'question',
+  FEEDBACK: 'feedback',
+  END: 'end'
+};
+
+const QUESTIONS_PER_RUN = 5;
+
+// Stickman component
+const Stickman = ({ pose = 'idle', color = '#ffffff' }) => {
+  const cell = 4;
+  const W = 20, H = 22;
+
+  // Hollow circle head: outer ring pixels only (on a 20-wide grid, head centered at x=9-10)
+  // Head outline: 4x4 circle outline at cols 7-12, rows 0-5
+  const HEAD = [
+    // top edge
+    [8,0],[9,0],[10,0],[11,0],
+    // sides
+    [7,1],[12,1],[7,2],[12,2],[7,3],[12,3],[7,4],[12,4],
+    // bottom edge
+    [8,5],[9,5],[10,5],[11,5],
+  ];
+
+  // Neck
+  const NECK = [[9,6],[10,6]];
+
+  // Body (torso)
+  const BODY = [[9,7],[10,7],[9,8],[10,8],[9,9],[10,9],[9,10],[10,10],[9,11],[10,11]];
+
+  // Poses define: arms + legs only
+  const POSE_PARTS = {
+    idle: {
+      arms: [[3,8],[4,8],[5,8],[6,8],[13,8],[14,8],[15,8],[16,8]],
+      legs: [[9,12],[8,13],[7,14],[6,15],[10,12],[11,13],[12,14],[13,15]]
+    },
+    cheer: {
+      arms: [[4,4],[5,5],[6,6],[7,7],[15,4],[14,5],[13,6],[12,7]],
+      legs: [[9,12],[8,13],[7,14],[6,15],[10,12],[11,13],[12,14],[13,15]]
+    },
+    sad: {
+      arms: [[4,10],[5,9],[6,8],[7,8],[13,8],[14,9],[15,10],[16,10]],
+      legs: [[9,12],[8,13],[7,14],[6,15],[10,12],[11,13],[12,14],[13,15]]
+    },
+    danceA: {
+      arms: [[3,6],[4,7],[5,7],[6,8],[13,9],[14,10],[15,11],[16,12]],
+      legs: [[9,12],[8,13],[7,14],[6,15],[10,12],[11,12],[12,13],[13,14]]
+    },
+    danceB: {
+      arms: [[3,9],[4,10],[5,10],[6,9],[13,7],[14,6],[15,6],[16,7]],
+      legs: [[9,12],[8,12],[7,13],[6,14],[10,12],[11,13],[12,14],[13,15]]
+    },
+    walk: {
+      arms: [[3,7],[4,7],[5,8],[6,8],[13,9],[14,9],[15,10],[16,10]],
+      legs: [[9,12],[8,13],[7,14],[6,15],[10,12],[11,12],[12,13],[13,14]]
+    }
+  };
+
+  const parts = POSE_PARTS[pose] || POSE_PARTS.idle;
+  const allPixels = [...HEAD, ...NECK, ...BODY, ...parts.arms, ...parts.legs];
+
+  return (
+    <svg viewBox={`0 0 ${W*cell} ${H*cell}`} width="100%" height="100%" shapeRendering="crispEdges">
+      {allPixels.map(([x, y], i) => (
+        <rect key={i} x={x*cell} y={y*cell} width={cell} height={cell} fill={color} />
+      ))}
+    </svg>
+  );
+};
+
+const AnimatedStickman = ({ animation = 'idle', color = '#ffffff' }) => {
+  const [frame, setFrame] = useState(0);
+
+  useEffect(() => {
+    if (animation === 'idle' || animation === 'sad') {
+      setFrame(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setFrame(f => (f + 1) % 2);
+    }, animation === 'dance' ? 220 : 360);
+    return () => clearInterval(interval);
+  }, [animation]);
+
+  let pose = 'idle';
+  if (animation === 'idle') pose = frame === 0 ? 'idle' : 'walk';
+  else if (animation === 'sad') pose = 'sad';
+  else if (animation === 'cheer') pose = frame === 0 ? 'cheer' : 'idle';
+  else if (animation === 'dance') pose = frame === 0 ? 'danceA' : 'danceB';
+
+  return <Stickman pose={pose} color={color} />;
+};
+
+// Stars background
+const Stars = ({ count = 30 }) => {
+  const stars = useMemo(() => {
+    return Array.from({ length: count }, (_, i) => ({
+      left: Math.random() * 100,
+      top: Math.random() * 70,
+      delay: Math.random() * 2
+    }));
+  }, [count]);
+  return (
+    <>
+      {stars.map((s, i) => (
+        <div key={i} className="star" style={{
+          left: `${s.left}%`,
+          top: `${s.top}%`,
+          opacity: 0.3 + Math.random() * 0.7
+        }}/>
+      ))}
+    </>
+  );
+};
+
+// Confetti
+const Confetti = ({ count = 40 }) => {
+  const colors = ['#ffd23f', '#ff2bd6', '#4dffea', '#44ff7c', '#ff3860'];
+  const pieces = useMemo(() => {
+    return Array.from({ length: count }, () => ({
+      left: Math.random() * 100,
+      delay: Math.random() * 2,
+      duration: 1.5 + Math.random() * 2,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    }));
+  }, [count]);
+  return (
+    <>
+      {pieces.map((p, i) => (
+        <div key={i} className="confetti" style={{
+          left: `${p.left}%`,
+          background: p.color,
+          animationDuration: `${p.duration}s`,
+          animationDelay: `${p.delay}s`
+        }}/>
+      ))}
+    </>
+  );
+};
+
+function pickN(arr, n) {
+  const copy = [...arr];
+  const out = [];
+  for (let i = 0; i < n && copy.length; i++) {
+    const idx = Math.floor(Math.random() * copy.length);
+    out.push(copy.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+// Title Screen
+const TitleScreen = ({ lang, onStart, T }) => (
+  <div className="title-stack">
+    <Stars count={20}/>
+    <div className="logo-art flicker">Cybersecurity</div>
+    <div className="title-sub-text">資訊安全與數位操弄</div>
+    <div style={{width: 96, height: 96, marginTop: 8}}>
+      <AnimatedStickman animation="idle" color="#4dffea"/>
+    </div>
+    <div className="px glow-yellow" style={{fontSize: 18, lineHeight: 1.9, maxWidth: 720}}>
+      {T(
+        '5 道題，每題二選一\n答錯沒關係\n每個人都會犯錯',
+        '5 QUESTIONS · 2 CHOICES EACH\nIT\'S OK TO GET ONE WRONG\nEVERYONE MAKES MISTAKES'
+      ).split('\n').map((line, i) => <div key={i}>{line}</div>)}
+    </div>
+    <button className="start-btn" onClick={onStart}>{T('▶ 投幣開始', '▶ INSERT COIN')}</button>
+    <div className="hint">{T('按 ENTER 或 SPACE 也可以', 'PRESS ENTER OR SPACE')}</div>
+    <div className="coin-row px" style={{opacity: 0.5}}>
+      <span className="glow-cyan">A / ←</span>
+      <span style={{opacity: 0.4}}>=</span>
+      <span>{T('左選項', 'LEFT')}</span>
+      <span style={{opacity: 0.3}}>·</span>
+      <span className="glow-pink">D / →</span>
+      <span style={{opacity: 0.4}}>=</span>
+      <span>{T('右選項', 'RIGHT')}</span>
+    </div>
+    <div className="source-ribbon px">{T('題材參考 COFACTS', 'SOURCES: COFACTS')}</div>
+  </div>
+);
+
+// Question Screen
+const QuestionScreen = ({ q, qIndex, total, lang, onChoose, flashSide, lastChoice, T }) => (
+  <div className="question-area">
+    <div className="scenario-box">
+      <div className="scenario-label">{T(`場景 ${qIndex+1} / ${total}`, `SCENE ${qIndex+1} / ${total}`)}</div>
+      <div className="px" style={{fontSize: 24, lineHeight: 1.9}}>
+        {lang === 'zh' ? q.scenario_zh : q.scenario_en}
+      </div>
+    </div>
+    <div className="choices-row">
+      <button
+        className={`choice-btn choice-left ${flashSide === 'left' ? (lastChoice === q.correct ? 'flash-correct' : 'flash-wrong') : ''}`}
+        onClick={() => onChoose('left')}
+        disabled={!!lastChoice}
+      >
+        <div className="choice-key">◀ A / ←</div>
+        <div>{lang === 'zh' ? q.left.label_zh : q.left.label_en}</div>
+      </button>
+      <div className="choice-vs">VS</div>
+      <button
+        className={`choice-btn choice-right ${flashSide === 'right' ? (lastChoice === q.correct ? 'flash-correct' : 'flash-wrong') : ''}`}
+        onClick={() => onChoose('right')}
+        disabled={!!lastChoice}
+      >
+        <div className="choice-key">D / ▶ →</div>
+        <div>{lang === 'zh' ? q.right.label_zh : q.right.label_en}</div>
+      </button>
+    </div>
+  </div>
+);
+
+// Feedback Screen
+const FeedbackScreen = ({ q, isCorrect, lang, onNext, isLast, T }) => (
+  <div className="question-area">
+    <div className={`feedback-box ${isCorrect ? 'correct' : 'wrong'}`}>
+      <div className={`feedback-head px ${isCorrect ? 'glow-green' : 'glow-red'}`}>
+        {isCorrect ? T('✓ 正確！', '✓ CORRECT!') : T('✗ 答錯了', '✗ WRONG')}
+      </div>
+      <div className="px" style={{fontSize: 14, opacity: 0.7, letterSpacing: 1}}>
+        {T('正解', 'CORRECT ANSWER')}: <span className={isCorrect ? 'glow-green' : 'glow-yellow'}>
+          {q.correct === 'left'
+            ? (lang === 'zh' ? q.left.label_zh : q.left.label_en)
+            : (lang === 'zh' ? q.right.label_zh : q.right.label_en)}
+        </span>
+      </div>
+      <div className="px" style={{fontSize: 24, lineHeight: 1.9}}>
+        {lang === 'zh' ? q.explain_zh : q.explain_en}
+      </div>
+      <button className="next-btn" onClick={onNext}>
+        {isLast ? T('看結果 ▶', 'SEE RESULTS ▶') : T('下一題 ▶', 'NEXT ▶')}
+        <span style={{opacity: 0.5, marginLeft: 10, fontSize: 12}}>[ENTER]</span>
+      </button>
+    </div>
+  </div>
+);
+
+// End Screen
+const EndScreen = ({ correctCount, total, allCorrect, results, lang, onRestart, T }) => {
+  let animation = 'idle';
+  let stickColor = '#ffd23f';
+  let headline_zh, headline_en, sub_zh, sub_en;
+
+  if (allCorrect) {
+    animation = 'dance'; stickColor = '#ffd23f';
+    headline_zh = '★ 全 部 答 對 ★'; headline_en = '★ FLAWLESS ★';
+    sub_zh = '你是防詐特攻隊員！'; sub_en = 'You are a Cyber Guard!';
+  } else if (correctCount >= 3) {
+    animation = 'cheer'; stickColor = '#4dffea';
+    headline_zh = '不 錯！'; headline_en = 'NOT BAD!';
+    sub_zh = '繼續精進辨識力'; sub_en = 'Keep sharpening your eyes';
+  } else {
+    animation = 'sad'; stickColor = '#ff3860';
+    headline_zh = '差 一 點 ⋯'; headline_en = 'CLOSE ⋯';
+    sub_zh = '看完解說再挑戰一次'; sub_en = 'Review the tips & retry';
+  }
+
+  return (
+    <div className="end-stack">
+      <div className={`px ${allCorrect ? 'glow-yellow flicker' : correctCount >= 3 ? 'glow-cyan' : 'glow-red'} end-headline`}>
+        {T(headline_zh, headline_en)}
+      </div>
+      <div className="px glow-cyan" style={{fontSize: 18}}>{T(sub_zh, sub_en)}</div>
+      <div className="end-stage">
+        {allCorrect && <Confetti count={50}/>}
+        <Stars count={15}/>
+        <div className="ground"/>
+        <div style={{width: 80, height: 120, position: 'absolute', bottom: 22, left: '50%', transform: 'translateX(-50%)'}}>
+          <AnimatedStickman animation={animation} color={stickColor}/>
+        </div>
+      </div>
+      <div className="end-score px glow-yellow">
+        {T('得分', 'SCORE')}: <span className="glow-green">{correctCount}</span> / {total}
+      </div>
+      <div className="result-row">
+        {results.map((r, i) => (
+          <span key={i} className="px" style={{display:'flex', flexDirection:'column', alignItems:'center', gap:4}}>
+            <span style={{fontSize: 14, opacity: 0.6}}>Q{i+1}</span>
+            <span className={r ? 'glow-green' : 'glow-red'} style={{fontSize: 24}}>{r ? '✓' : '✗'}</span>
+          </span>
+        ))}
+      </div>
+      <button className="start-btn" onClick={onRestart}>{T('▶ 再玩一次', '▶ PLAY AGAIN')}</button>
+      <div className="hint">{T('按 ENTER 或 SPACE 也可以', 'PRESS ENTER OR SPACE')}</div>
+      {allCorrect && (
+        <div className="px glow-pink" style={{fontSize: 14, marginTop: 6, textAlign: 'center', maxWidth: 720, lineHeight: 1.8}}>
+          {T(
+            '◆ 解鎖：HIGH SCORE 100% ◆\n把這個遊戲分享給家人朋友',
+            '◆ UNLOCKED: HIGH SCORE 100% ◆\nShare this game with friends & family'
+          ).split('\n').map((line, i) => <div key={i}>{line}</div>)}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Main App
+const App = () => {
+  const [scene, setScene] = useState(SCENE.TITLE);
+  const [lang, setLang] = useState('zh');
+  const [questions, setQuestions] = useState([]);
+  const [qIndex, setQIndex] = useState(0);
+  const [results, setResults] = useState([]);
+  const [lastChoice, setLastChoice] = useState(null);
+  const [flashSide, setFlashSide] = useState(null);
+
+  const T = (zh, en) => lang === 'zh' ? zh : en;
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (scene === SCENE.QUESTION) {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') choose('left');
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') choose('right');
+      } else if (scene === SCENE.FEEDBACK) {
+        if (e.key === 'Enter' || e.key === ' ') next();
+      } else if (scene === SCENE.TITLE) {
+        if (e.key === 'Enter' || e.key === ' ') start();
+      } else if (scene === SCENE.END) {
+        if (e.key === 'Enter' || e.key === ' ') start();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  const start = () => {
+    const picked = pickN(window.QUESTION_BANK, QUESTIONS_PER_RUN);
+    setQuestions(picked);
+    setQIndex(0);
+    setResults([]);
+    setLastChoice(null);
+    setFlashSide(null);
+    setScene(SCENE.QUESTION);
+  };
+
+  const choose = (side) => {
+    if (lastChoice) return;
+    const q = questions[qIndex];
+    const isCorrect = side === q.correct;
+    setLastChoice(side);
+    setFlashSide(side);
+    setResults(r => [...r, isCorrect]);
+    setTimeout(() => { setScene(SCENE.FEEDBACK); }, 600);
+  };
+
+  const next = () => {
+    setLastChoice(null);
+    setFlashSide(null);
+    if (qIndex + 1 >= questions.length) {
+      setScene(SCENE.END);
+    } else {
+      setQIndex(i => i + 1);
+      setScene(SCENE.QUESTION);
+    }
+  };
+
+  const correctCount = results.filter(Boolean).length;
+  const allCorrect = correctCount === QUESTIONS_PER_RUN && results.length === QUESTIONS_PER_RUN;
+
+  return (
+    <div className="cabinet">
+      <div className="screen">
+        <div className="pixel-border"/>
+        <div className="hud">
+          <div className="hud-cell">
+            <span className="px glow-yellow">FREEDOM</span>
+            <span className="px blink glow-pink">●</span>
+          </div>
+          <div className="hud-cell">
+            {(scene === SCENE.QUESTION || scene === SCENE.FEEDBACK) ? (
+              <>
+                <span className="px" style={{fontSize:14, opacity:0.6}}>{T('題', 'Q')}</span>
+                {Array.from({length: QUESTIONS_PER_RUN}).map((_, i) => {
+                  let cls = 'score-pip';
+                  if (i < results.length) cls += results[i] ? ' filled' : ' wrong';
+                  return <span key={i} className={cls}/>;
+                })}
+              </>
+            ) : null}
+          </div>
+          <div className="hud-cell">
+            <button className="lang-btn" onClick={() => setLang(l => l === 'zh' ? 'en' : 'zh')}>
+              {lang === 'zh' ? 'EN' : '中文'}
+            </button>
+          </div>
+        </div>
+
+        {scene === SCENE.TITLE && <TitleScreen lang={lang} onStart={start} T={T}/>}
+        {scene === SCENE.QUESTION && (
+          <QuestionScreen
+            q={questions[qIndex]} qIndex={qIndex} total={QUESTIONS_PER_RUN}
+            lang={lang} onChoose={choose} flashSide={flashSide} lastChoice={lastChoice} T={T}
+          />
+        )}
+        {scene === SCENE.FEEDBACK && (
+          <FeedbackScreen
+            q={questions[qIndex]} isCorrect={results[results.length - 1]}
+            lang={lang} onNext={next} isLast={qIndex + 1 >= QUESTIONS_PER_RUN} T={T}
+          />
+        )}
+        {scene === SCENE.END && (
+          <EndScreen
+            correctCount={correctCount} total={QUESTIONS_PER_RUN}
+            allCorrect={allCorrect} results={results}
+            lang={lang} onRestart={start} T={T}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
