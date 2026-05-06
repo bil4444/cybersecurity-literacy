@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cybersecurity Literacy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; font-family: 'Nunito', sans-serif; overflow: hidden; background: #fafafa; }
+#root { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.phone { width: min(390px, 96vw); height: min(780px, 96vh); background: #fff; border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 0 0 2px #e0e0e0; display: flex; flex-direction: column; overflow: hidden; }
+.ig-bar { background: #fff; border-bottom: 1px solid #dbdbdb; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; }
+.ig-logo { font-size: 18px; font-weight: 800; background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.lang-pill { font-size: 11px; font-weight: 700; color: #2d5be3; background: #eef2ff; padding: 4px 10px; border-radius: 99px; cursor: pointer; border: none; font-family: inherit; }
+.awareness-bar-wrap { background: #fff; padding: 5px 14px 7px; border-bottom: 1px solid #efefef; flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+.awareness-label { font-size: 10px; font-weight: 700; color: #8e8e8e; white-space: nowrap; }
+.awareness-bg { flex: 1; height: 4px; background: #efefef; border-radius: 99px; overflow: hidden; }
+.awareness-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+.q-counter { font-size: 10px; font-weight: 700; color: #8e8e8e; white-space: nowrap; }
+.feed { flex: 1; overflow-y: auto; min-height: 0; }
+.feed::-webkit-scrollbar { display: none; }
+.title-card { padding: 28px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.title-logo { font-size: 20px; font-weight: 800; color: #1a1a1a; }
+.title-sub { font-size: 13px; color: #8e8e8e; font-weight: 600; }
+.title-desc { font-size: 13px; color: #555; line-height: 1.7; background: #fafafa; border-radius: 12px; padding: 12px 16px; white-space: pre-line; border: 1px solid #efefef; width: 100%; text-align: left; }
+.btn-start { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; border: none; border-radius: 8px; padding: 12px 0; width: 100%; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.source-note { font-size: 11px; color: #c7c7c7; }
+.post { border-bottom: 1px solid #efefef; }
+.post-header { display: flex; align-items: center; gap: 10px; padding: 9px 12px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex: 0 0 34px; }
+.av-red { background: linear-gradient(135deg,#f09433,#dc2743); }
+.av-purple { background: linear-gradient(135deg,#667eea,#764ba2); }
+.av-blue { background: linear-gradient(135deg,#4facfe,#00f2fe); }
+.av-green { background: linear-gradient(135deg,#43e97b,#38f9d7); }
+.av-wa { background: #06c755; }
+.av-gray { background: #8e8e8e; }
+.post-user { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.post-verified { display: inline-block; width: 11px; height: 11px; background: #2d5be3; border-radius: 50%; margin-left: 3px; position: relative; top: 1px; }
+.post-verified::after { content: '✓'; color: #fff; font-size: 7px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-weight: 800; }
+.post-time { font-size: 10px; color: #8e8e8e; }
+.post-dots { margin-left: auto; font-size: 16px; color: #8e8e8e; }
+.post-img { width: 100%; padding: 14px; min-height: 90px; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.bg-dark { background: linear-gradient(135deg,#1a1a2e,#0f3460); }
+.bg-warm { background: linear-gradient(135deg,#ff9a56,#f7331e); }
+.bg-green { background: linear-gradient(135deg,#11998e,#38ef7d); }
+.bg-purple { background: linear-gradient(135deg,#667eea,#764ba2); }
+.bg-orange { background: linear-gradient(135deg,#f7971e,#ffd200); }
+.bg-red { background: linear-gradient(135deg,#cb2d3e,#ef473a); }
+.post-img-headline { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.4; }
+.post-img-sub { font-size: 11px; color: rgba(255,255,255,0.78); font-weight: 600; }
+.post-img-url { font-size: 10px; color: rgba(255,255,255,0.5); font-family: monospace; margin-top: 2px; }
+.post-actions { display: flex; gap: 12px; padding: 7px 12px 3px; font-size: 20px; }
+.post-save { margin-left: auto; }
+.post-likes { font-size: 12px; font-weight: 700; color: #1a1a1a; padding: 0 12px 3px; }
+.post-caption { font-size: 12px; color: #1a1a1a; padding: 0 12px 8px; line-height: 1.5; }
+.post-caption b { font-weight: 700; }
+.wa-thread { background: #e5ddd5; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.wa-bubble { max-width: 84%; padding: 7px 10px; border-radius: 8px; font-size: 12px; line-height: 1.6; font-weight: 600; white-space: pre-line; word-break: break-word; }
+.wa-bubble.recv { background: #fff; align-self: flex-start; border-radius: 0 8px 8px 8px; color: #1a1a1a; }
+.wa-bubble.sent { background: #dcf8c6; align-self: flex-end; border-radius: 8px 0 8px 8px; color: #1a1a1a; }
+.wa-tick { font-size: 10px; color: #8e8e8e; text-align: right; padding: 0 2px; }
+.scene-label { font-size: 10px; font-weight: 700; color: #2d5be3; letter-spacing: 1px; text-transform: uppercase; padding: 7px 12px 0; }
+.choice-area { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 7px; }
+.choice-btn { border: 2px solid; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-align: left; transition: transform 0.1s; line-height: 1.4; }
+.choice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.cb-blue { background: #eff8ff; border-color: #2d5be3; color: #2d5be3; }
+.cb-pink { background: #fff0f6; border-color: #e91e8c; color: #e91e8c; }
+.cb-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+.cb-wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+.fb-area { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.fb-badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 800; align-self: flex-start; }
+.fb-badge.ok { background: #d1fae5; color: #065f46; }
+.fb-badge.no { background: #fee2e2; color: #991b1b; }
+.fb-ans { font-size: 11px; color: #8e8e8e; font-weight: 600; }
+.fb-ans span { color: #2d5be3; font-weight: 800; }
+.fb-explain { background: #fafafa; border-left: 3px solid #2d5be3; border-radius: 0 8px 8px 0; padding: 8px 10px; font-size: 12px; color: #1a1a1a; line-height: 1.7; font-weight: 600; }
+.fb-explain.no { border-left-color: #ef4444; }
+.btn-next { background: #2d5be3; color: #fff; border: none; border-radius: 8px; padding: 10px 0; width: 100%; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.end-card { padding: 24px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.end-scene { width: 100%; height: 90px; background: linear-gradient(135deg,#eef2ff,#e0e7ff); border-radius: 12px; position: relative; overflow: hidden; }
+.end-ground { position: absolute; bottom: 0; left: 0; right: 0; height: 14px; background: #4ade80; }
+.end-sm { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); }
+.end-headline { font-size: 24px; font-weight: 800; }
+.end-sub { font-size: 13px; color: #666; font-weight: 600; }
+.end-score { font-size: 17px; font-weight: 800; color: #2d5be3; }
+.pips { display: flex; gap: 7px; justify-content: center; }
+.pip { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+.pip.ok { background: #d1fae5; color: #065f46; }
+.pip.no { background: #fee2e2; color: #991b1b; }
+.btn-replay { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; border: none; border-radius: 8px; padding: 12px 0; width: 100%; font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script>
+window.QB = [
+  // === 釣魚連結 Phishing ===
+  {id:"nhi_cn",type:"wa",
+   user_zh:"健保署通知",user_en:"NHI Notification",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【健保署】您的健保卡將於72小時內停用，請至以下網址重新驗證身份：\nnhi.gov.cn/verify\n逾期將暫停服務。"}],
+   bubbles_en:[{s:"recv",t:"[NHI] Your NHI card will be suspended in 72hrs. Verify your identity at:\nnhi.gov.cn/verify\nService will be suspended if not completed."}],
+   time_zh:"上午 09:14",time_en:"9:14 AM",
+   left:{zh:"點連結驗證",en:"Click & verify"},right:{zh:"直接打電話給健保署",en:"Call NHI directly"},correct:"right",
+   explain_zh:"台灣健保署官網是 nhi.gov.tw，.cn 是中國網域。政府機關絕不會用 .cn 網址或簡訊要求驗證身份。",
+   explain_en:"NHI's real site is nhi.gov.tw — .cn is a Chinese domain. Government agencies never use .cn URLs or SMS to verify identity."},
+
+  {id:"toiwan",type:"wa",
+   user_zh:"朋友 阿明",user_en:"Friend A-Ming",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"快看！台海最新軍情！\nwww.toiwan-news.com\n超誇張的！"},{s:"recv",t:"趕快分享給大家！"}],
+   bubbles_en:[{s:"recv",t:"Check this out! Latest Taiwan Strait news!\nwww.toiwan-news.com\nThis is huge!"},{s:"recv",t:"Share it to everyone!"}],
+   time_zh:"下午 02:33",time_en:"2:33 PM",
+   left:{zh:"馬上點開看",en:"Click to read"},right:{zh:"發現拼字錯誤，不點",en:"Spot the typo, don't click"},correct:"right",
+   explain_zh:"toiwan 是 taiwan 的釣魚拼法。緊急新聞請直接查 CNA、自由時報等官方媒體，不要靠朋友傳的連結。",
+   explain_en:"\"toiwan\" is a phishing misspelling of \"taiwan.\" For urgent news, go directly to CNA or verified media — never follow forwarded links."},
+
+  {id:"bamk",type:"wa",
+   user_zh:"玉山銀行 客服",user_en:"ESun Bank Service",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【玉山銀行】您的網路銀行帳戶偵測到異常登入，為保護您的帳戶安全，請立即登入以下網址處理：\nesunbamk.com.tw\n請勿延誤，謝謝。"}],
+   bubbles_en:[{s:"recv",t:"[ESun Bank] Suspicious login detected on your account. For your security, please log in immediately at:\nesunbamk.com.tw\nPlease act promptly. Thank you."}],
+   time_zh:"上午 11:02",time_en:"11:02 AM",
+   left:{zh:"點連結登入",en:"Click & log in"},right:{zh:"自己輸入銀行官網網址",en:"Type real URL manually"},correct:"right",
+   explain_zh:"bamk 是 bank 的拼字陷阱。玉山銀行真正網址是 esunbank.com.tw。任何要求點連結登入銀行的訊息，都應直接手動輸入官網查證。",
+   explain_en:"\"bamk\" vs \"bank\" — easy to miss. Real ESun is esunbank.com.tw. Never click banking login links; type the official URL directly."},
+
+  {id:"gov_tw_cn",type:"wa",
+   user_zh:"財政部 稅務通知",user_en:"MOF Tax Notice",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【財政部】您有一筆稅款尚未繳清，請至以下網址完成繳費以避免滯納金：\netax.nat.gov.tw.cn/pay\n請於3日內完成。"}],
+   bubbles_en:[{s:"recv",t:"[MOF] You have an outstanding tax balance. Please complete payment at the following URL to avoid late fees:\netax.nat.gov.tw.cn/pay\nPlease complete within 3 days."}],
+   time_zh:"上午 08:47",time_en:"8:47 AM",
+   left:{zh:"點連結繳費",en:"Click & pay"},right:{zh:"直接上 etax.nat.gov.tw",en:"Go to etax.nat.gov.tw directly"},correct:"right",
+   explain_zh:"etax.nat.gov.tw.cn 看起來有 gov.tw，但真正的頂級網域是最後的 .cn。判斷網域要從最後一個點往前讀。",
+   explain_en:"The real TLD is read right-to-left after the last dot — .cn is the actual domain, not .gov.tw. The real site is etax.nat.gov.tw with nothing after it."},
+
+  {id:"post_zero",type:"wa",
+   user_zh:"中華郵政 配送通知",user_en:"Chunghwa Post Delivery",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【郵局】您有一個包裹因地址不符無法投遞，請點以下連結更新地址：\nchunghwa-p0st.com/update\n超過24小時將退回寄件人。"}],
+   bubbles_en:[{s:"recv",t:"[Post Office] Your package could not be delivered due to an address mismatch. Update your address at:\nchunghwa-p0st.com/update\nWill be returned to sender after 24 hours."}],
+   time_zh:"下午 01:15",time_en:"1:15 PM",
+   left:{zh:"點連結更新地址",en:"Click & update address"},right:{zh:"直接上中華郵政官網",en:"Check post.gov.tw directly"},correct:"right",
+   explain_zh:"p0st 把字母 o 換成數字 0。中華郵政官網是 post.gov.tw，不是 .com，也不會用簡訊要你點連結更新地址。",
+   explain_en:"\"p0st\" replaces O with zero. Real Chunghwa Post is post.gov.tw — not .com, and never sends SMS update links."},
+
+  {id:"cec_taiwam",type:"wa",
+   user_zh:"中選會 選務通知",user_en:"CEC Election Notice",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【中選會】距離投票日僅剩48小時，請盡快至以下網址確認您的投票資格：\ncec-taiwam.org/verify\n未確認者可能無法投票。"}],
+   bubbles_en:[{s:"recv",t:"[CEC] Only 48 hours until election day. Please verify your voting eligibility at:\ncec-taiwam.org/verify\nUnverified voters may be unable to vote."}],
+   time_zh:"上午 10:00",time_en:"10:00 AM",
+   left:{zh:"點連結確認資格",en:"Click to confirm eligibility"},right:{zh:"只信 cec.gov.tw",en:"Trust only cec.gov.tw"},correct:"right",
+   explain_zh:"taiwam 是 taiwan 的拼字陷阱，m 取代 n 視覺上極難發現。中選會官網是 cec.gov.tw。選前釣魚網站目的是竊取個資或製造選舉混亂。",
+   explain_en:"\"taiwam\" swaps N for M — nearly invisible. Real CEC is cec.gov.tw. Pre-election phishing aims to steal data or sow electoral confusion."},
+
+  {id:"mnd_cn",type:"wa",
+   user_zh:"同事 志明",user_en:"Colleague Zhi-Ming",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"我剛收到一份文件，說是國防部最新機密報告"},{s:"recv",t:"mnd-tw.com.cn/classified\n你看看是不是真的"}],
+   bubbles_en:[{s:"recv",t:"I just received a document — claims to be the latest MND classified report"},{s:"recv",t:"mnd-tw.com.cn/classified\nCheck if it's real"}],
+   time_zh:"下午 03:22",time_en:"3:22 PM",
+   left:{zh:"好奇點開看看",en:"Click out of curiosity"},right:{zh:"立刻通報資安人員",en:"Report to security team"},correct:"right",
+   explain_zh:".com.cn 是中國商業網域，國防部官網是 mnd.gov.tw。機密文件絕不會用公開連結傳送——這是魚叉式釣魚攻擊。",
+   explain_en:".com.cn is a Chinese domain. Real MND is mnd.gov.tw. Classified files are never shared via public links — this is spear phishing."},
+
+  {id:"tsmc_cn",type:"ig",
+   user_zh:"tsmc_careers_global",user_en:"tsmc_careers_global",av:"av-blue",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"台積電海外擴廠大招募！",img_headline_en:"TSMC Global Expansion — Now Hiring!",
+   img_sub_zh:"電子、機械、材料工程師 海外高薪職缺",img_sub_en:"Electronics, Mechanical, Materials Engineers — High Salary Overseas",
+   img_url:"hr@tsmc-careers.cn",
+   likes:"847",time_zh:"2天前",time_en:"2d ago",
+   caption_zh:"台積電亞利桑那廠、德國廠大規模招募，請將履歷寄至 hr@tsmc-careers.cn，把握千載難逢的機會！",
+   caption_en:"TSMC Arizona and Germany fab hiring now. Send your CV to hr@tsmc-careers.cn — don't miss this once-in-a-lifetime opportunity!",
+   left:{zh:"寄出履歷",en:"Send your CV"},right:{zh:"到台積電官網確認招募管道",en:"Verify via tsmc.com careers"},correct:"right",
+   explain_zh:"台積電官方招募透過 tsmc.com，不會用 .cn 信箱。履歷含個資，這可能是針對半導體人才的情報蒐集行動。",
+   explain_en:"TSMC recruits via tsmc.com only — never a .cn email. Sending your CV risks data theft and may be an intel-gathering op targeting chip talent."},
+
+  {id:"ltn_one",type:"wa",
+   user_zh:"家族群組 💪",user_en:"Family Group 💪",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"阿姨傳來的，很重要！"},{s:"recv",t:"www.1iberty-times.com\n\n台灣即將發生大事！大家要小心！"}],
+   bubbles_en:[{s:"recv",t:"Auntie sent this, very important!"},{s:"recv",t:"www.1iberty-times.com\n\nSomething big is about to happen in Taiwan! Everyone be careful!"}],
+   time_zh:"下午 07:45",time_en:"7:45 PM",
+   left:{zh:"看起來像自由時報，信任",en:"Looks like LTN, trust it"},right:{zh:"發現數字1取代字母l，不信",en:"Spot 1 vs l trick, don't trust"},correct:"right",
+   explain_zh:"把小寫字母 l 換成數字 1，在許多字型下幾乎一模一樣。自由時報官網是 ltn.com.tw。查核新聞要直接去媒體官網，不要只看連結表面。",
+   explain_en:"Replacing lowercase L with 1 is nearly invisible in many fonts. Real Liberty Times is ltn.com.tw. Always verify news at the outlet's official site."},
+
+  {id:"taivan_tax",type:"ig",
+   user_zh:"gov_refund_tw",user_en:"gov_refund_tw",av:"av-blue",verified:true,
+   img_class:"bg-dark",
+   img_headline_zh:"【退稅公告】快來領你的退稅！",img_headline_en:"[Tax Refund] Claim your refund now!",
+   img_sub_zh:"財政部：2024年度退稅申請開始受理",img_sub_en:"MOF: 2024 tax refund applications now open",
+   img_url:"mof-taivan.com",
+   likes:"2,341",time_zh:"1天前",time_en:"1d ago",
+   caption_zh:"財政部退稅申請開跑！請至 mof-taivan.com 登入申請，限時受理，額滿為止！",
+   caption_en:"MOF tax refund applications open now! Log in at mof-taivan.com to apply — limited time, first come first served!",
+   left:{zh:"點連結申請退稅",en:"Click to apply for refund"},right:{zh:"找 .gov.tw 的官方網站",en:"Find the .gov.tw official site"},correct:"right",
+   explain_zh:"taivan 是 taiwan 的釣魚變體。廣告和貼文可以被任何人製作，排名靠前或讚數多不代表是官方。台灣政府機關一律使用 .gov.tw。",
+   explain_en:"\"taivan\" mimics \"taiwan.\" Posts and ads can be made by anyone — high likes don't mean official. Taiwan government always uses .gov.tw."},
+
+  {id:"parking_qr",type:"ig",
+   user_zh:"parking_notice_tw",user_en:"parking_notice_tw",av:"av-gray",verified:false,
+   img_class:"bg-orange",
+   img_headline_zh:"⚠️ 違規停車繳費通知",img_headline_en:"⚠️ Parking Violation — Payment Required",
+   img_sub_zh:"掃描 QR Code 線上繳費，免去跑監理站麻煩",img_sub_en:"Scan QR Code to pay online — no need to visit the DMV",
+   img_url:"parking-pay-tw.com",
+   likes:"—",time_zh:"夾在車上",time_en:"Left on windshield",
+   caption_zh:"您的車輛於今日被開立違規停車罰單，請掃描車上夾附的 QR Code 至 parking-pay-tw.com 完成線上繳費。",
+   caption_en:"Your vehicle was issued a parking violation today. Please scan the QR Code attached to your windshield at parking-pay-tw.com to pay online.",
+   left:{zh:"掃碼快點繳清",en:"Scan & pay quickly"},right:{zh:"上監理服務網查詢",en:"Check Taiwan MVD official site"},correct:"right",
+   explain_zh:"真正的罰單會寄到戶籍地址，不會夾在車上要你掃 QR。假罰單 QR 連到釣魚頁面竊取信用卡資料。所有罰款請至監理服務網查證。",
+   explain_en:"Real tickets are mailed to your registered address — never left on your car with a QR code. Fake ticket QRs lead to phishing pages that steal card data."},
+
+  {id:"deepfake_pres",type:"ig",
+   user_zh:"taiwan_gov_news",user_en:"taiwan_gov_news",av:"av-blue",verified:true,
+   img_class:"bg-purple",
+   img_headline_zh:"【緊急公告】總統宣布：全民發放6萬元補助",img_headline_en:"[Urgent] President announces: NT$60,000 cash for all citizens",
+   img_sub_zh:"AI 合成影片 · 請點連結登記",img_sub_en:"AI-generated video · Register at the link",
+   img_url:"presidential-tw-subsidy.com.cn",
+   likes:"41,823",time_zh:"3小時前",time_en:"3h ago",
+   caption_zh:"影片中「總統」宣布：「即日起全民發放6萬元，請點以下連結登記領取」。請見 presidential-tw-subsidy.com.cn",
+   caption_en:"Video of \"President\" announces: \"Starting today, every citizen receives NT$60,000 — register at the link below.\" See presidential-tw-subsidy.com.cn",
+   left:{zh:"點連結登記領錢",en:"Register to claim"},right:{zh:"查總統府官方公告",en:"Check Presidential Office website"},correct:"right",
+   explain_zh:"Deepfake 已能仿造任何政要的臉與聲音。政府發錢一定有正式公告（總統府、行政院官網）。要登記個資的「政府影片」幾乎都是釣魚。",
+   explain_en:"Deepfakes can impersonate any official convincingly. Real government payouts come through official portals only. Any video asking you to register personal data via a link is almost certainly phishing."},
+
+  {id:"linkedin_phish",type:"ig",
+   user_zh:"dr.chen.researcher",user_en:"dr.chen.researcher",av:"av-purple",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"誠邀資安專業人士參與線上研討會",img_headline_en:"Invitation: Cybersecurity Professionals Online Forum",
+   img_sub_zh:"某知名智庫 × 資安政策研究",img_sub_en:"Leading Think Tank × Cybersecurity Policy Research",
+   img_url:"cybersec-forum-asia.org",
+   likes:"312",time_zh:"1週前",time_en:"1w ago",
+   caption_zh:"LinkedIn 私訊：「您好，我是某知名智庫的資深研究員，想邀請您參加線上座談，分享您的資安研究成果。」",
+   caption_en:"LinkedIn DM: \"Hello, I'm a senior researcher at a prominent think tank and would like to invite you to share your cybersecurity research at our online forum.\"",
+   left:{zh:"接受邀請，分享研究",en:"Accept and share research"},right:{zh:"先查證對方身份與機構",en:"Verify identity and institution first"},correct:"right",
+   explain_zh:"中國共產黨相關影響力行動常透過 LinkedIn 接觸資安、政策、國防專業人士。FBI 與台灣調查局均有記錄。接受邀請前應查證機構官網，確認邀請者真實存在。",
+   explain_en:"Chinese Communist Party-linked ops frequently use LinkedIn to approach cybersecurity and defense professionals. The FBI and Taiwan's Investigation Bureau have documented many cases. Always verify independently before accepting."},
+
+  {id:"wrong_number",type:"wa",
+   user_zh:"陌生人 +886 912 345 678",user_en:"Stranger +886 912 345 678",av:"av-wa",
+   bubbles_zh:[{s:"recv",t:"你好！抱歉，我加錯人了 😅"},{s:"recv",t:"不過既然加上了，我老師最近在帶一個飆股群組，已經有人賺到了！"},{s:"recv",t:"完全免費，進來看看就好 📈 不喜歡可以隨時退出"}],
+   bubbles_en:[{s:"recv",t:"Hi! Sorry, I added the wrong person 😅"},{s:"recv",t:"But since we're connected — my mentor runs a hot-stock group, people are already making money!"},{s:"recv",t:"Totally free, just come take a look 📈 You can leave anytime"}],
+   time_zh:"下午 04:11",time_en:"4:11 PM",
+   left:{zh:"好奇加入看看",en:"Join out of curiosity"},right:{zh:"封鎖並刪除",en:"Block & delete"},correct:"right",
+   explain_zh:"「加錯人」是 165 反詐騙專線記錄最多的開場白。套路：假老師→假投資 App→小賺誘加碼→最後出金失敗。每年造成台灣數十億損失。",
+   explain_en:"\"Wrong number\" is the top scam opener on Taiwan's 165 hotline. Playbook: fake mentor → fake app → small wins → big deposit → withdrawal blocked. Costs Taiwan billions annually."},
+
+  {id:"esun_cn",type:"wa",
+   user_zh:"玉山銀行 安全中心",user_en:"ESun Bank Security",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"【玉山銀行安全中心】您的帳戶於今日下午偵測到異常登入，為保障資金安全，請立即至：\nesunbank.com.cn\n重新驗證身份，否則帳戶將於1小時內凍結。"}],
+   bubbles_en:[{s:"recv",t:"[ESun Bank Security] Suspicious login detected on your account this afternoon. To protect your funds, please immediately verify your identity at:\nesunbank.com.cn\nYour account will be frozen within 1 hour if not verified."}],
+   time_zh:"下午 02:58",time_en:"2:58 PM",
+   left:{zh:"點連結立刻驗證",en:"Click & verify immediately"},right:{zh:"封鎖並回報給銀行",en:"Block & report to the bank"},correct:"right",
+   explain_zh:"玉山銀行真正網域是 esunbank.com.tw，不是 .com.cn。台灣銀行絕不會用中國網域聯絡客戶，也不會用簡訊要求點連結驗證身份。",
+   explain_en:"Real ESun Bank is esunbank.com.tw — not .com.cn. Taiwanese banks never use Chinese domains or SMS links to request identity verification."},
+
+  // === 認知作戰 / 社群謠言 Influence Operations ===
+  {id:"chiang_coffin",type:"ig",
+   user_zh:"taiwan_political_insider",user_en:"taiwan_political_insider",av:"av-red",verified:false,
+   img_class:"bg-warm",
+   img_headline_zh:"炸穿台灣政壇！蔣友松強行遷走兩蔣懸棺",img_headline_en:"Taiwan Political BOMBSHELL! Chiang Yu-sung to forcibly move coffins",
+   img_sub_zh:"蔣家第四代突然放狠話，要把兩蔣棺材搬回中國",img_sub_en:"4th-gen Chiang suddenly threatens to move coffins back to China",
+   likes:"1,284",time_zh:"3小時前",time_en:"3h ago",
+   caption_zh:"【獨家】從來沒碰過政治的蔣家第四代蔣友松，突然放狠話要強行把蔣介石、蔣經國的棺材從台灣搬走送回中國！",
+   caption_en:"[Exclusive] The apolitical 4th-gen Chiang Yu-sung suddenly threatens to FORCIBLY move Chiang Kai-shek and Chiang Ching-kuo's coffins from Taiwan back to China!",
+   left:{zh:"驚！立刻轉發",en:"Shocking! Share now"},right:{zh:"查證新聞原始報導",en:"Find the original source"},correct:"right",
+   explain_zh:"「強行」「狠話」等煽情用字是操弄標誌。蔣友松確曾提及遷葬意願，但「強行」是媒體誇大或扭曲。轉發前先找原始報導，確認引號內的話是否真實存在。",
+   explain_en:"Words like \"forcibly\" are emotional amplifiers — a manipulation red flag. Chiang Yu-sung did mention reburial wishes, but \"forcibly\" was media distortion. Always find the original quote before sharing."},
+
+  {id:"potato_toxin",type:"wa",
+   user_zh:"媽媽群組 🌸",user_en:"Moms Group 🌸",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"重要！不要再吃馬鈴薯了！"},{s:"recv",t:"台灣原本規定發芽超過五毫米整批退運。現在美國馬鈴薯可以進口了，吃三顆就會致死！龍葵鹼神經毒素！"},{s:"recv",t:"快轉給所有人知道！"}],
+   bubbles_en:[{s:"recv",t:"IMPORTANT! Stop eating potatoes!"},{s:"recv",t:"Taiwan used to reject all potatoes with sprouts over 5mm. Now US potatoes can be imported — eating just 3 will kill you! Solanine neurotoxin!"},{s:"recv",t:"Forward to everyone now!"}],
+   time_zh:"上午 09:33",time_en:"9:33 AM",
+   left:{zh:"警告家人不要吃馬鈴薯",en:"Warn family to avoid potatoes"},right:{zh:"查食藥署實際標準",en:"Check Taiwan FDA actual standards"},correct:"right",
+   explain_zh:"龍葵鹼確實存在，但「吃三顆致死」嚴重誇大。食藥署標準是龍葵鹼含量不得超過200mg/kg，並非零容忍。這是真實資訊＋誇大恐慌的常見謠言套路。",
+   explain_en:"Solanine is real, but \"3 potatoes = death\" is a massive exaggeration. Taiwan FDA's limit is 200mg/kg, not zero. Classic disinfo: real fact + manufactured panic."},
+
+  {id:"abandon_taiwan",type:"ig",
+   user_zh:"geopolitics_truth",user_en:"geopolitics_truth",av:"av-red",verified:false,
+   img_class:"bg-purple",
+   img_headline_zh:"美國最大規模對台軍售已停擺！",img_headline_en:"Largest-ever US arms sale to Taiwan has STALLED!",
+   img_sub_zh:"白痴才把錢送美國｜我們只是一顆棋子",img_sub_en:"Only fools pay America｜We're just pawns",
+   likes:"3,891",time_zh:"5小時前",time_en:"5h ago",
+   caption_zh:"所有地緣政治紛爭都是美國挑起然後收保護費。美國兩邊賺，遲早出賣台灣。我們只是一顆棋子。",
+   caption_en:"All geopolitical conflicts are started by the US to collect protection fees. America plays both sides and will sell out Taiwan. We're just pawns.",
+   left:{zh:"美國果然不可信！轉發",en:"America can't be trusted! Share"},right:{zh:"查軍售現況與多方報導",en:"Check arms sale status from multiple sources"},correct:"right",
+   explain_zh:"「棄台論」是 中國共產黨對台資訊作戰的核心敘事，目的是瓦解台灣對美信任、動搖防衛意志。軍售延遲有複雜行政因素，與「出賣台灣」是完全不同的概念。",
+   explain_en:"\"Abandonment narrative\" is a core Chinese Communist Party info-op tactic designed to erode US-Taiwan trust. Arms delivery delays have complex administrative causes — very different from \"selling out Taiwan.\""},
+
+  {id:"taiwan_hollowing",type:"ig",
+   user_zh:"taiwan_economic_watch",user_en:"taiwan_economic_watch",av:"av-red",verified:false,
+   img_class:"bg-red",
+   img_headline_zh:"2026年起台灣經濟將快速衰退",img_headline_en:"Taiwan's economy will rapidly decline starting 2026",
+   img_sub_zh:"科技城市房價崩盤｜台灣正在被掏空",img_sub_en:"Tech city housing to collapse｜Taiwan being hollowed out",
+   likes:"5,672",time_zh:"2天前",time_en:"2d ago",
+   caption_zh:"2026年起台灣經濟將開始快速衰退，新竹、竹北、頭份、台中、台南等科技聚集城市房價崩盤。你不應該擔心快被統一，而是注意台灣正在被慢慢被掏空。",
+   caption_en:"Starting 2026, Taiwan's economy will rapidly decline. Tech city housing in Hsinchu, Zhubei, Toufen, Taichung, Tainan will collapse. Don't worry about unification — worry about Taiwan being slowly hollowed out.",
+   left:{zh:"台灣沒救了，認同轉發",en:"Taiwan is doomed, share this"},right:{zh:"查經濟數據與專業預測",en:"Check economic data and expert forecasts"},correct:"right",
+   explain_zh:"「掏空」「快速衰退」「崩盤」都是情緒化斷言，缺乏具體數據。這類末日敘事是認知作戰工具，目的是製造悲觀情緒。查主計總處、央行等官方數據再判斷。",
+   explain_en:"\"Hollowing out,\" \"rapid decline,\" and \"collapse\" are emotional assertions without data. Doomsday narratives are cognitive warfare tools designed to manufacture pessimism. Check DGBAS and CBC data before concluding."},
+
+  {id:"kmt_subsidy",type:"ig",
+   user_zh:"taiwan_justice_voice",user_en:"taiwan_justice_voice",av:"av-red",verified:false,
+   img_class:"bg-warm",
+   img_headline_zh:"民進黨雙標！",img_headline_en:"DPP Double Standard!",
+   img_sub_zh:"不給在野黨480萬，卻花十幾億養非洲獨裁者",img_sub_en:"Denied NT$4.8M to opposition, but billions to African dictators",
+   likes:"7,234",time_zh:"1天前",time_en:"1d ago",
+   caption_zh:"不能花480萬給在野黨幫忙改善兩岸關係，但台灣民進黨政府可以每年花十幾億養非洲的獨裁者，讓史國國王爽爽後宮選妃生小孩？",
+   caption_en:"Can't spend NT$4.8M helping the opposition improve cross-strait relations, but the DPP government can spend billions annually supporting African dictators so a king can enjoy his harem?",
+   left:{zh:"政府真的很雙標！轉發",en:"Double standard! Share this"},right:{zh:"查邦交援助預算實際用途",en:"Check actual diplomatic aid budget"},correct:"right",
+   explain_zh:"這則貼文把兩件性質完全不同的事並排比較，製造「雙標」印象。台灣的邦交援助有正式預算監督機制。比較框架（A不行但B可以）是常見認知操弄手法，需分開查證每個主張。",
+   explain_en:"This post pairs two unrelated items to manufacture a false \"double standard.\" Taiwan's diplomatic aid has formal budget oversight. The comparison framing technique is a classic manipulation tactic — each claim needs separate verification."},
+
+  {id:"bullet_corruption",type:"ig",
+   user_zh:"taiwan_corruption_exposed",user_en:"taiwan_corruption_exposed",av:"av-red",verified:false,
+   img_class:"bg-red",
+   img_headline_zh:"民進黨貪污！國防部15億子彈標案",img_headline_en:"DPP Corruption! MND NT$1.5B bullet tender",
+   img_sub_zh:"自製6元 外購18元｜誰A走了？",img_sub_en:"Domestic NT$6 vs imported NT$18｜Who pocketed it?",
+   likes:"4,521",time_zh:"6小時前",time_en:"6h ago",
+   caption_zh:"民進黨貪污，國防部15億元子彈標案，我國早能自製卻向外購買惹爭議，子彈外銷賣6元，向外購買18元，自己能做還倒貼，到底誰A走？",
+   caption_en:"DPP corruption — MND's NT$1.5B bullet tender sparked controversy. Taiwan can make them for NT$6 but bought externally at NT$18. Who pocketed the difference?",
+   left:{zh:"政府在貪污！轉發",en:"Government is corrupt! Share"},right:{zh:"查標案原始公文與比價依據",en:"Check original tender docs and specs"},correct:"right",
+   explain_zh:"價差指控需查原始標案文件。不同規格的彈藥成本差異很大。未說明規格的數字對比毫無意義。貪污指控應以調查結果為準，不能只看社群貼文。",
+   explain_en:"Price claims require original procurement documents. Ammunition costs vary enormously by spec. Without specifications, the NT$6 vs NT$18 comparison is meaningless. Corruption allegations require verified investigation results."},
+
+  {id:"defense_budget",type:"ig",
+   user_zh:"taiwan_military_watch",user_en:"taiwan_military_watch",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"賴清德追加1.25兆國防預算！",img_headline_en:"Lai Ching-te adds NT$1.25T defense budget!",
+   img_sub_zh:"F-16買了2400億一架都沒交｜台灣會變烏克蘭？",img_sub_en:"NT$240B for F-16s, zero delivered｜Will Taiwan become Ukraine?",
+   likes:"8,834",time_zh:"4小時前",time_en:"4h ago",
+   caption_zh:"賴清德宣布追加1.25兆特別預算。之前花2400億跟美國買的66架F-16，到現在一架都還沒交。烏克蘭打了3年，傷亡上百萬，現在被逼著談判。我們要重蹈覆轍？",
+   caption_en:"Lai Ching-te announces NT$1.25T special defense budget. 66 F-16s purchased for NT$240B — zero delivered. Ukraine fought 3 years, millions of casualties, now forced to negotiate. Is Taiwan heading the same way?",
+   left:{zh:"台灣會變烏克蘭！轉發",en:"Taiwan will become Ukraine! Share"},right:{zh:"分開查證每項主張",en:"Verify each claim separately"},correct:"right",
+   explain_zh:"這則貼文將多個議題混合製造恐慌。F-16交機有既定時程，台美雙方均有公開說明。烏克蘭類比是常見的反防衛敘事，目的是讓台灣人放棄防衛意志。",
+   explain_en:"This post bundles multiple issues to manufacture panic. F-16 delivery follows a set schedule documented by both sides. The Ukraine analogy is a common anti-defense narrative designed to erode Taiwan's will to defend itself."},
+
+  {id:"takaichi_grandfather",type:"wa",
+   user_zh:"歷史揭秘頻道",user_en:"History Exposed Channel",av:"av-red",
+   bubbles_zh:[{s:"recv",t:"在屠殺中國人的日本兵裡，有個特別殘忍的陸軍少佐，他的名字叫做高市利彥。"},{s:"recv",t:"就是現在日本首相高市早苗的祖父。"},{s:"recv",t:"大家要記住這段歷史！轉發！"}],
+   bubbles_en:[{s:"recv",t:"Among the Japanese soldiers who massacred Chinese people, there was a notoriously brutal Army Major named Takaichi Toshihiko."},{s:"recv",t:"He is the grandfather of current Japanese PM Takaichi Sanae."},{s:"recv",t:"Everyone must remember this history! Forward!"}],
+   time_zh:"上午 11:27",time_en:"11:27 AM",
+   left:{zh:"日本政客有問題！轉發",en:"Typical Japanese politician! Share"},right:{zh:"查這個人是否真實存在",en:"Verify if this person actually exists"},correct:"right",
+   explain_zh:"這則訊息經查證為捏造：找不到「高市利彥」的任何歷史記錄。以捏造的家族罪行污名化政治人物，是針對日台關係的認知作戰手法。",
+   explain_en:"This claim has been fact-checked as fabricated — no historical record of \"Takaichi Toshihiko\" exists. Smearing politicians with invented ancestral crimes is a classic info-op against Japan-Taiwan relations."},
+
+  {id:"lai_private_son",type:"ig",
+   user_zh:"taiwan_insider_leak",user_en:"taiwan_insider_leak",av:"av-red",verified:false,
+   img_class:"bg-red",
+   img_headline_zh:"賴清德不用選了！他撒謊問題大了",img_headline_en:"Lai Ching-te is done! His lies have caught up with him",
+   img_sub_zh:"私生子疑雲｜莊雅芬｜賴庭瀚",img_sub_en:"Illegitimate son｜Chuang Ya-fen｜Lai Ting-han",
+   likes:"15,672",time_zh:"2小時前",time_en:"2h ago",
+   caption_zh:"賴清德有私生子。全世界都知道賴清德養小三叫莊雅芬、生了一個私生子叫賴庭瀚。",
+   caption_en:"Lai Ching-te has an illegitimate son. The whole world knows that Lai Ching-te kept a mistress named Chuang Ya-fen and fathered an illegitimate son named Lai Ting-han.",
+   left:{zh:"全世界都知道！轉發",en:"The whole world knows! Share"},right:{zh:"查有無可信媒體報導",en:"Check for credible media reports"},correct:"right",
+   explain_zh:"「全世界都知道」是謠言常用的虛假共識手法。這類政治人物私生活指控若屬實，必有正式媒體報導與法律訴訟。沒有可查證來源的個人攻擊，是選舉期間認知作戰的標準操作。",
+   explain_en:"\"The whole world knows\" is a classic false consensus technique. If true, such allegations would generate formal media coverage and legal proceedings. Unverifiable personal attacks are standard cognitive warfare tactics during elections."},
+
+  {id:"india_workers",type:"wa",
+   user_zh:"鄰居群組 🏠",user_en:"Neighborhood Group 🏠",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"印度移工要來台十萬人！"},{s:"recv",t:"台灣人+印度人=高級詐騙+駭客，慘😭！"},{s:"recv",t:"大家要小心！轉發！"}],
+   bubbles_en:[{s:"recv",t:"100,000 Indian migrant workers coming to Taiwan!"},{s:"recv",t:"Taiwanese + Indians = high-end scams + hackers. Disaster 😭!"},{s:"recv",t:"Everyone be careful! Forward!"}],
+   time_zh:"下午 06:15",time_en:"6:15 PM",
+   left:{zh:"台灣太危險了！轉發",en:"Taiwan is doomed! Share"},right:{zh:"認出這是族裔歧視謠言",en:"Recognize this as ethnic stereotyping"},correct:"right",
+   explain_zh:"將整個國籍群體與犯罪畫上等號，是種族歧視謠言。台印勞工協議有正式談判過程與審查機制。用族裔恐慌製造社會對立，是分化台灣社會的常見操弄手法。",
+   explain_en:"Equating an entire nationality with crime is ethnic stereotyping and misinformation. Taiwan-India labor agreements undergo formal negotiation and review. Using ethnic panic to divide society is a common manipulation tactic."},
+
+  {id:"hamas_cia",type:"ig",
+   user_zh:"middle_east_truth",user_en:"middle_east_truth",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"哈馬斯其實是以色列和CIA培養的！",img_headline_en:"Hamas was actually created by Israel and the CIA!",
+   img_sub_zh:"為了對付阿拉法特而專門資助",img_sub_en:"Specifically funded to counter Arafat",
+   likes:"9,341",time_zh:"3天前",time_en:"3d ago",
+   caption_zh:"對以色列發動襲擊的哈馬斯，其實是以色列跟CIA為了反對當時巴勒斯坦的領袖阿拉法特而專門資助的這個組織。",
+   caption_en:"Hamas, which attacked Israel, was actually an organization that Israel and the CIA specifically funded to oppose PLO leader Arafat.",
+   left:{zh:"陰謀論有道理！轉發",en:"Conspiracy makes sense! Share"},right:{zh:"查哈馬斯的真實歷史",en:"Research Hamas's actual history"},correct:"right",
+   explain_zh:"以色列早期確曾允許哈馬斯前身活動以制衡PLO，但「CIA培養」是嚴重扭曲。哈馬斯是伊斯蘭主義運動，有其獨立的意識形態根源。將複雜歷史簡化為陰謀論是認知作戰常用手法。",
+   explain_en:"Israel did allow Hamas's precursor to operate as a counterweight to the PLO, but \"CIA created\" is a major distortion. Hamas is an Islamist movement with independent ideological roots. Collapsing complex history into conspiracy is a standard disinfo technique."},
+
+  {id:"food_anger",type:"wa",
+   user_zh:"食安關注群組",user_en:"Food Safety Group",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"開放萊豬進口曾引爆瘋狂反彈！"},{s:"recv",t:"美國豬在台灣屠宰通通變身台灣豬！巴西蛋加醬油變成滷蛋都可以標示成台灣蛋！"},{s:"recv",t:"萊豬毒不死你、核食還毒不死，再來進巴西過期蛋。我們台灣人到底是欠民進黨什麼？"}],
+   bubbles_en:[{s:"recv",t:"The ractopamine pork imports sparked massive backlash!"},{s:"recv",t:"US pork slaughtered in Taiwan becomes 'Taiwan pork'! Brazilian eggs with soy sauce become 'Taiwan eggs'!"},{s:"recv",t:"Ractopamine pork didn't kill you, nuclear food didn't, now expired Brazilian eggs. What do Taiwanese people owe the DPP?"}],
+   time_zh:"上午 08:01",time_en:"8:01 AM",
+   left:{zh:"食安黑幕！憤怒轉發",en:"Food safety scandal! Share in anger"},right:{zh:"分開查每項食安標準",en:"Check each food safety claim separately"},correct:"right",
+   explain_zh:"這則訊息把多個不同時期的食安爭議混在一起，製造「累積憤怒」效果。萊豬、日本食品、進口蛋各有不同的法規與查驗機制。查食藥署公告比社群貼文可靠得多。",
+   explain_en:"This message bundles multiple food safety controversies from different periods to accumulate outrage. Ractopamine pork, Japanese food, and imported eggs each have separate regulations. Check TFDA announcements rather than social posts."},
+
+  {id:"nhi_cancelled",type:"wa",
+   user_zh:"轉傳 重要資訊",user_en:"Forwarded Important Info",av:"av-red",
+   bubbles_zh:[{s:"recv",t:"【轉傳】中國國台辦再三聲明強調："},{s:"recv",t:"「統一後會取消台灣地區健保」\n「統一後會停止台灣地區軍公教年金」\n「統一後會停止台灣地區長照社福」\n「統一後會取消台灣地區銀行存款保險」"},{s:"recv",t:"大家要知道！趕快轉！"}],
+   bubbles_en:[{s:"recv",t:"[Forwarded] China's TAO has repeatedly emphasized:"},{s:"recv",t:"\"After unification, Taiwan's NHI will be abolished\"\n\"Military/civil pensions will be stopped\"\n\"Long-term care and social welfare will be stopped\"\n\"Bank deposit insurance will be abolished\""},{s:"recv",t:"Everyone needs to know! Forward now!"}],
+   time_zh:"下午 09:22",time_en:"9:22 PM",
+   left:{zh:"統一太可怕！轉發警告",en:"Unification is terrifying! Share warning"},right:{zh:"查國台辦是否真的說過這些",en:"Verify if TAO actually said this"},correct:"right",
+   explain_zh:"這則訊息聲稱引用「國台辦聲明」，但找不到任何原始出處。即使內容符合直覺，引用虛假聲明反而削弱可信度。查國台辦官網確認原文再決定是否轉發。",
+   explain_en:"This message claims to quote a \"TAO statement\" but no original source exists. Even if the content feels plausible, citing fabricated statements undermines credibility. Check the TAO official site before sharing."},
+
+  {id:"one_life",type:"ig",
+   user_zh:"peace_taiwan_2024",user_en:"peace_taiwan_2024",av:"av-green",verified:false,
+   img_class:"bg-green",
+   img_headline_zh:"生命只有一次，總統再選就有",img_headline_en:"Life comes once, but presidents can always be re-elected",
+   img_sub_zh:"何必打仗？請為台灣後代謀求基本的安全",img_sub_en:"Why fight? Please seek basic safety for Taiwan's future generations",
+   likes:"12,047",time_zh:"1天前",time_en:"1d ago",
+   caption_zh:"生命只有一次，總統再選就有。何必打仗戰爭，請為台灣的後代子孫謀求基本的安全。",
+   caption_en:"Life only comes once, but there will always be another president. Why fight a war? Please seek basic safety for Taiwan's future generations.",
+   left:{zh:"說得對！和平優先，轉發",en:"So true! Peace first, share it"},right:{zh:"認出這是以和平包裝的放棄論",en:"Recognize this as surrender framed as peace"},correct:"right",
+   explain_zh:"這則貼文用「和平」與「下一代」等情感訴求，實質上是要求放棄防衛意志。「打仗 vs 不打仗」的二元框架刻意忽略了嚇阻力、外交手段等選項。這是 中國共產黨對台資訊作戰的核心話術之一。",
+   explain_en:"This post uses \"peace\" and \"future generations\" as emotional hooks to advocate abandoning defense. The binary \"fight or don't fight\" frame deliberately omits deterrence, diplomacy, and other options — a core Chinese Communist Party narrative."},
+
+  {id:"ukraine_puppet",type:"ig",
+   user_zh:"world_truth_daily",user_en:"world_truth_daily",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"烏克蘭蠢民選了美國傀儡澤倫斯基",img_headline_en:"Ukrainian fools elected US puppet Zelensky",
+   img_sub_zh:"美國坐收漁利｜城市成廢墟｜孩子成孤兒",img_sub_en:"America profits｜Cities in rubble｜Children orphaned",
+   likes:"6,782",time_zh:"2天前",time_en:"2d ago",
+   caption_zh:"烏克蘭的蠢民，選了一個美國的傀儡澤倫斯基！美國是軍火、能源及糧食出口大國，在幕後煽風點火，導致俄烏戰爭，坐收漁人之利。",
+   caption_en:"Ukrainian fools elected US puppet Zelensky! America is a major exporter of weapons, energy and food. They fan the flames behind the scenes, causing the Russia-Ukraine war, and profit from it.",
+   left:{zh:"美國害了烏克蘭！轉發",en:"America destroyed Ukraine! Share"},right:{zh:"認出這是俄羅斯敘事框架",en:"Recognize this as Russian narrative frame"},correct:"right",
+   explain_zh:"這個框架與俄羅斯官方宣傳高度吻合：把侵略者責任轉嫁給被害者與美國。「傀儡」說法抹去烏克蘭人的自主意志。同樣框架也被用來說台灣是美國棋子。",
+   explain_en:"This mirrors Russian state propaganda: shifting blame from aggressor to victim and US. The \"puppet\" frame erases Ukrainian agency. The same template is applied to Taiwan — framing it as an American pawn."},
+
+  {id:"putin_asean",type:"ig",
+   user_zh:"asia_geopolitics_now",user_en:"asia_geopolitics_now",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"普京暗示可提供台灣「非常規支持」",img_headline_en:"Putin hints at \"unconventional support\" on Taiwan issue",
+   img_sub_zh:"東盟：呼籲美國停止將台海軍事化",img_sub_en:"ASEAN: calls on US to stop militarizing Taiwan Strait",
+   likes:"4,213",time_zh:"1天前",time_en:"1d ago",
+   caption_zh:"俄羅斯總統普京在東方經濟論壇上，表態支持中國處理台灣問題，並暗示如有需要，俄方可提供「非常規支持」。東南亞國家領導人在東盟會議上，一致表達了對台海軍事化的擔憂，呼籲美國停止。",
+   caption_en:"Russian President Putin at EEF expressed support for China on Taiwan and hinted Russia could provide \"unconventional support\" if needed. ASEAN leaders at their summit unanimously expressed concerns about Taiwan Strait militarization and called on the US to stop.",
+   left:{zh:"國際都反美！台灣要重新考慮",en:"World is anti-US! Taiwan should reconsider"},right:{zh:"查東盟與普京的原始發言",en:"Find original ASEAN and Putin statements"},correct:"right",
+   explain_zh:"這則訊息混合了真實事件（普京確曾發言）與捏造內容（東盟「一致」反美說法）。查ASEAN公報原文——實際上東盟對台海立場更為複雜。混合真假訊息是最難識破的操弄手法之一。",
+   explain_en:"This blends real events (Putin did speak) with fabricated content (ASEAN \"unanimously\" anti-US). Read the actual ASEAN communiqué — their position is far more nuanced. Mixing true and false is one of the hardest disinfo techniques to detect."},
+
+  {id:"tsmc_trump",type:"wa",
+   user_zh:"科技新聞速報",user_en:"Tech News Flash",av:"av-red",
+   bubbles_zh:[{s:"recv",t:"川普要用美國建築工人蓋台積電，把台積電技術納為己有供應英特爾！"},{s:"recv",t:"他幾乎已經把所有在亞利桑那州台積電的台灣人全部遣返回台灣了！"},{s:"recv",t:"美國要搶台積電技術！轉！"}],
+   bubbles_en:[{s:"recv",t:"Trump wants US construction workers for TSMC and plans to absorb TSMC technology for Intel!"},{s:"recv",t:"He's already sent virtually all Taiwanese workers at TSMC Arizona back to Taiwan!"},{s:"recv",t:"US is stealing TSMC tech! Forward!"}],
+   time_zh:"上午 10:44",time_en:"10:44 AM",
+   left:{zh:"美國要搶台積電技術！轉",en:"US stealing TSMC tech! Forward"},right:{zh:"查 TSMC 亞利桑那廠實際現況",en:"Check actual TSMC Arizona status"},correct:"right",
+   explain_zh:"這則訊息混合了部分真實（川普確曾表達對建廠的意見）與誇大捏造（「全部遣返」是假的）。台積電亞利桑那廠仍在運作，有官方公告可查。疑美論常用「部分真實＋大量誇大」的手法。",
+   explain_en:"This mixes partial truth (Trump did comment on construction) with fabrication (\"all sent back\" is false). TSMC Arizona continues operations — check official announcements. Anti-US narratives frequently use \"partial truth + heavy exaggeration.\""},
+
+  {id:"bot_trending",type:"ig",
+   user_zh:"tw_real_voice_777",user_en:"tw_real_voice_777",av:"av-gray",verified:false,
+   img_class:"bg-orange",
+   img_headline_zh:"10萬人按讚！這才是台灣真實民意",img_headline_en:"100k likes! This is Taiwan's real public opinion",
+   img_sub_zh:"新帳號 · 風景頭像 · 留言全部一面倒",img_sub_en:"New account · Landscape avatar · All one-sided comments",
+   likes:"100,284",time_zh:"6小時前",time_en:"6h ago",
+   caption_zh:"PTT / X 一夜爆紅貼文：10萬讚、留言一面倒、帳號都是新註冊、頭像都是風景照。這才是真正的民意！",
+   caption_en:"Overnight viral on PTT/X: 100k likes, one-sided comments, all new accounts, all landscape avatars. This is the real public opinion!",
+   left:{zh:"民意如此，跟風轉發",en:"Looks like public opinion, share"},right:{zh:"懷疑是機器人帶風向",en:"Suspect coordinated bots"},correct:"right",
+   explain_zh:"新帳號 + 風景頭像 + 一致話術 = 協同造假（Coordinated Inauthentic Behavior）的經典特徵。台灣已多次發現境外帳號群在重大議題上製造「主流民意」假象。",
+   explain_en:"New accounts + landscape avatars + uniform messaging = classic Coordinated Inauthentic Behavior. Taiwan has repeatedly caught foreign bot networks fabricating false public consensus on key issues."},
+
+  {id:"russia_bio",type:"wa",
+   user_zh:"國際警示頻道",user_en:"International Alert Channel",av:"av-red",
+   bubbles_zh:[{s:"recv",t:"【緊急】俄羅斯向聯合國緊急舉報！"},{s:"recv",t:"美國打著消滅自然界蚊子的旗號，用無人機投放毒蚊子，蚊子上還帶有數字編號！"},{s:"recv",t:"這些生物炸彈一旦進入國門，後果簡直是不堪設想！請轉發讓更多人知道！"}],
+   bubbles_en:[{s:"recv",t:"[URGENT] Russia reports to UN emergency session!"},{s:"recv",t:"The US, under the guise of eliminating natural mosquitoes, is using drones to release toxic mosquitoes with serial numbers!"},{s:"recv",t:"Once these biological bombs cross borders, the consequences are unimaginable! Forward so more people know!"}],
+   time_zh:"下午 11:03",time_en:"11:03 PM",
+   left:{zh:"生化武器！恐怖！轉發警告",en:"Bio-weapons! Terrifying! Share warning"},right:{zh:"認出這是俄羅斯官方宣傳",en:"Recognize as Russian state propaganda"},correct:"right",
+   explain_zh:"俄羅斯多次在聯合國提出美國生物武器指控，均遭駁回且無證據。「帶編號的蚊子」是設計來引發恐慌的捏造細節。這類生物武器陰謀論是俄羅斯資訊戰的標準輸出。",
+   explain_en:"Russia has repeatedly made US bioweapon claims at the UN — all rejected, none proven. \"Numbered mosquitoes\" is a panic-inducing fabrication. Bioweapon conspiracy theories are standard Russian info-op output."},
+
+  {id:"sb553",type:"wa",
+   user_zh:"家族群組 💪",user_en:"Family Group 💪",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"2023/9/5 加州剛剛通過了SB553號法案！"},{s:"recv",t:"商家、僱員、顧客等不得阻礙打砸搶偷，違者罰款18000美元！"},{s:"recv",t:"加州人遇到偷盜，請高舉雙手，避免遭受雙重損失。美國真的完了！😱"}],
+   bubbles_en:[{s:"recv",t:"9/5/2023 California just passed SB553!"},{s:"recv",t:"Merchants, employees, and customers cannot obstruct theft or looting — violators fined $18,000!"},{s:"recv",t:"Californians: hands up when robbed to avoid double losses. America is truly done! 😱"}],
+   time_zh:"下午 07:30",time_en:"7:30 PM",
+   left:{zh:"美國完了！轉發嘲笑",en:"America is done! Share and mock"},right:{zh:"查 SB553 的真正內容",en:"Read what SB553 actually says"},correct:"right",
+   explain_zh:"SB553 是工作場所安全法，規定雇主不得強迫員工以人身阻擋竊賊（保護員工安全），與「不得阻礙打砸搶」完全相反。這是故意曲解立法意圖的典型案例。",
+   explain_en:"SB553 is a workplace safety law preventing employers from requiring employees to physically confront shoplifters — the opposite of \"can't stop theft.\" Textbook legislative misrepresentation."},
+
+  {id:"nuclear_fish",type:"wa",
+   user_zh:"食安警示群組",user_en:"Food Safety Alert Group",av:"av-green",
+   bubbles_zh:[{s:"recv",t:"日本要運2萬隻核廢水的魚進口到台灣了，別國都不要收！"},{s:"recv",t:"因中國大陸香港澳門不准進入而拒絕，日本官員正向中方抗議，所以台灣要收日本核廢水魚！"},{s:"recv",t:"快警告家人不要吃！"}],
+   bubbles_en:[{s:"recv",t:"Japan is shipping 20,000 nuclear wastewater fish to Taiwan since no other country will take them!"},{s:"recv",t:"China, HK and Macau banned them, Japan is protesting to China, so Taiwan ends up taking the nuclear wastewater fish!"},{s:"recv",t:"Warn your family not to eat fish!"}],
+   time_zh:"上午 07:15",time_en:"7:15 AM",
+   left:{zh:"核食危機！警告家人別吃魚",en:"Nuclear crisis! Warn family off fish"},right:{zh:"查食藥署日本食品檢驗結果",en:"Check Taiwan FDA Japanese food tests"},correct:"right",
+   explain_zh:"「核廢水的魚」混淆了ALPS處理水排放與食品安全兩個概念。台灣食藥署對日本食品有獨立檢驗機制。中國禁止日本水產是政治決定，與食安無關。",
+   explain_en:"\"Nuclear wastewater fish\" conflates ALPS water discharge with food safety. Taiwan FDA independently tests Japanese imports. China's ban is political, not safety-based."},
+
+  {id:"ukraine_55",type:"ig",
+   user_zh:"ukraine_war_truth",user_en:"ukraine_war_truth",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"烏克蘭年輕人都打光了！",img_headline_en:"Ukraine's young people are all gone!",
+   img_sub_zh:"後來招的軍人都超過55歲｜沒人有笑容",img_sub_en:"Newly drafted soldiers all over 55｜No one is smiling",
+   likes:"7,123",time_zh:"3天前",time_en:"3d ago",
+   caption_zh:"烏克蘭年輕人都打光了？！後面再召來的這些烏克蘭的軍人都超過55歲了。美國繼續畫大餅將烏克蘭往火坑裡推，也繼續激怒俄羅斯，但年底沒錢了。",
+   caption_en:"Ukraine's young people are all gone?! Newly recruited soldiers are all over 55. America keeps dangling NATO promises while pushing Ukraine into the fire pit, provoking Russia, but then ran out of money by year end.",
+   left:{zh:"戰爭太悲慘了！轉發",en:"War is too tragic! Share"},right:{zh:"查烏克蘭徵兵實際年齡規定",en:"Check Ukraine's actual conscription age rules"},correct:"right",
+   explain_zh:"烏克蘭確實面臨兵員壓力，但「都超過55歲」是誇大。烏克蘭徵兵年齡下限曾調降至25歲，並非55歲以上。用真實的戰爭悲劇包裝誇大數字，是讓謠言更難識破的常見手法。",
+   explain_en:"Ukraine does face manpower pressure, but \"all over 55\" is an exaggeration. Ukraine lowered its conscription age floor to 25, not 55+. Wrapping exaggerated numbers in real wartime tragedy makes disinformation harder to detect."},
+
+  {id:"russia_jewish",type:"ig",
+   user_zh:"global_conspiracy_watch",user_en:"global_conspiracy_watch",av:"av-red",verified:false,
+   img_class:"bg-dark",
+   img_headline_zh:"俄羅斯：猶太人想在烏克蘭建國？",img_headline_en:"Russia: Jews want to establish a state in Ukraine?",
+   img_sub_zh:"打死烏克蘭人正好給以色列人騰地方",img_sub_en:"Killing Ukrainians clears land for Israel to build a new state",
+   likes:"3,891",time_zh:"5天前",time_en:"5d ago",
+   caption_zh:"俄羅斯發現猶太人可能想在烏克蘭建國，如果把烏克蘭人都打死了，正好給以色列人騰地方建國，以色列在烏克蘭建國會給俄羅斯留下麻煩。",
+   caption_en:"Russia discovered that Jews may want to establish a state in Ukraine. If Ukrainians are all killed, it would clear space for Israelis to build a state — which would then create problems for Russia.",
+   left:{zh:"陰謀論有道理！轉發",en:"This conspiracy makes sense! Share"},right:{zh:"認出這是反猶太陰謀論",en:"Recognize this as antisemitic conspiracy theory"},correct:"right",
+   explain_zh:"這是將反猶太主義與俄烏戰爭混合的陰謀論，沒有任何事實依據。澤倫斯基本人是猶太裔，其家人在二戰中曾遭納粹迫害。這類訊息是俄羅斯資訊戰的典型輸出內容。",
+   explain_en:"This is an antisemitic conspiracy theory with zero factual basis. Zelensky himself is Jewish, with family members killed by Nazis in WWII. This type of content is typical Russian information warfare output."},
+
+  {id:"us_obsolete",type:"wa",
+   user_zh:"國防分析師",user_en:"Defense Analyst",av:"av-red",
+   bubbles_zh:[{s:"recv",t:"大家可以上網查美國政府通過的法案。"},{s:"recv",t:"根據此法律，美國只能供應給台灣過期（obsolete）武器。原因很殘酷——知道打不贏，要避免新式武器落入中共之手。"},{s:"recv",t:"所以這場戰爭的設計是以台灣年輕人的血肉，換取國際社會的譴責與制裁。"}],
+   bubbles_en:[{s:"recv",t:"Everyone can look up the US law that was passed."},{s:"recv",t:"According to this law, the US can only supply Taiwan with obsolete weapons. The reason is cruel — they know Taiwan can't win and want to prevent new weapons from falling into Chinese Communist Party hands."},{s:"recv",t:"So this war is designed to use Taiwan's young people's flesh and blood to gain international condemnation and sanctions."}],
+   time_zh:"下午 02:17",time_en:"2:17 PM",
+   left:{zh:"美國把台灣當棄子！轉發",en:"US treats Taiwan as expendable! Share"},right:{zh:"查《台灣關係法》實際條文",en:"Read the actual Taiwan Relations Act"},correct:"right",
+   explain_zh:"《台灣關係法》並無「只能供應過期武器」的規定，原文是提供「防禦性武器」（defensive arms）。這則訊息故意曲解法律用語，是「棄台論」敘事的變體。",
+   explain_en:"The Taiwan Relations Act does not mandate \"obsolete\" weapons — it specifies \"defensive arms.\" This message deliberately mistranslates legal language. It's a variant of the \"abandonment narrative.\""},
+
+  {id:"china_elder_robot",type:"ig",
+   user_zh:"china_tech_daily",user_en:"china_tech_daily",av:"av-blue",verified:false,
+   img_class:"bg-green",
+   img_headline_zh:"北京海淀700戶老人每人收到養老機器人！",img_headline_en:"700 Beijing Haidian elders each receive a care robot!",
+   img_sub_zh:"完成所有家務｜精準識別情緒｜感知身體不適",img_sub_en:"All housework｜Precise emotion detection｜Senses physical discomfort",
+   likes:"18,234",time_zh:"1週前",time_en:"1w ago",
+   caption_zh:"北京海淀社區作為機器人使用試點社區的700戶老人，每人收到了一臺養老機器人，免費供大家使用。機器人內置了100多項養老服務，幾乎可以完成所有的家務勞動，精準識別你的情緒愛好，以及身體是否不適。",
+   caption_en:"700 elderly households in Beijing's Haidian district pilot community each received a free care robot. The robot has over 100 built-in services, can handle virtually all housework, precisely identify your emotional preferences, and detect physical discomfort.",
+   left:{zh:"中國科技真強！轉發羨慕",en:"China's tech is amazing! Share with envy"},right:{zh:"查這個計劃是否真實存在",en:"Verify if this program actually exists"},correct:"right",
+   explain_zh:"這類「中國科技盛世」影片常誇大或捏造細節，製造「中國模式優越」的印象。「完成所有家務、精準識別情緒」的描述遠超現有機器人技術水平。查原始新聞來源與技術規格再判斷。",
+   explain_en:"\"China tech utopia\" content often exaggerates or fabricates details to promote Chinese model superiority. \"All housework + precise emotion detection\" far exceeds current robotics capabilities. Check original sources and tech specs before sharing."},
+
+  {id:"china_invest",type:"wa",
+   user_zh:"兩岸青年發展協會",user_en:"Cross-Strait Youth Development Association",av:"av-blue",
+   bubbles_zh:[{s:"recv",t:"台灣青年到中國發展！政府補助200萬創業金，保證成功！"},{s:"recv",t:"名額有限，今天報名了解詳情，不要錯過千載難逢的機會！"},{s:"recv",t:"點這裡報名 👉 tw-youth-cn-invest.com"}],
+   bubbles_en:[{s:"recv",t:"Taiwan youth — develop in China! NT$2M government startup grant, guaranteed success!"},{s:"recv",t:"Limited spots, sign up today to learn more — don't miss this once-in-a-lifetime opportunity!"},{s:"recv",t:"Click here to register 👉 tw-youth-cn-invest.com"}],
+   time_zh:"上午 10:05",time_en:"10:05 AM",
+   left:{zh:"報名了解詳情",en:"Sign up for details"},right:{zh:"懷疑是統戰話術",en:"Recognize as possible united-front tactic"},correct:"right",
+   explain_zh:"「保證成功」+ 大額補助 = 統戰紅旗。實際案例：台灣青年赴中後護照遭沒收、被迫加入詐騙集團或被要求政治表態。陸委會多次發出警示。",
+   explain_en:"\"Guaranteed success\" + large subsidy = united-front red flag. Documented cases: Taiwanese youth had passports confiscated, were coerced into scam operations or political statements. Taiwan's MAC has repeatedly issued warnings."},
+
+  {id:"yt_health",type:"ig",
+   user_zh:"health_secrets_taiwan",user_en:"health_secrets_taiwan",av:"av-red",verified:false,
+   img_class:"bg-orange",
+   img_headline_zh:"醫生不告訴你！每天喝這個，三天清光血栓",img_headline_en:"Doctors hide this! Drink daily, clears blood clots in 3 days",
+   img_sub_zh:"AI 配音 + 名醫照片 · 已有10萬人見證",img_sub_en:"AI voice + doctor photo · 100,000 people already witnessed results",
+   likes:"23,841",time_zh:"5天前",time_en:"5d ago",
+   caption_zh:"YouTube 影片：「醫生不告訴你！每天喝這個，三天清光血栓」AI 配音 + 名醫照片。已有10萬人見證效果，快分享給家人！",
+   caption_en:"YouTube video: \"Doctors hide this! Drink this daily, clears blood clots in 3 days\" — AI voice + stolen doctor photo. 100,000 people have witnessed the results. Share with family!",
+   left:{zh:"分享到家族群組",en:"Share to family group chat"},right:{zh:"略過並向 YouTube 檢舉",en:"Skip & report to YouTube"},correct:"right",
+   explain_zh:"這類影片盜用名醫照片、使用AI合成聲音、以「醫生不告訴你」製造緊迫感。Cofacts已多次查證為假。原則：能三天治好的療法，諾貝爾獎早就頒出去了。",
+   explain_en:"These videos steal doctor photos, use AI-generated voices, and exploit \"doctors hide this\" urgency framing. Cofacts has debunked many. Rule: if a 3-day cure existed, it would have won a Nobel Prize."},
+
+  {id:"miracle_supplement",type:"ig",
+   user_zh:"taiwan_health_official",user_en:"taiwan_health_official",av:"av-blue",verified:true,
+   img_class:"bg-green",
+   img_headline_zh:"衛福部認證！神奇減肥糖，一個月瘦20公斤",img_headline_en:"MOHW-certified! Miracle diet candy — lose 20kg in a month",
+   img_sub_zh:"限時特價 85折｜數量有限",img_sub_en:"Limited time 15% off｜While supplies last",
+   img_url:"mohw-diet-official.com.cn",
+   likes:"5,672",time_zh:"3天前",time_en:"3d ago",
+   caption_zh:"衛福部認證！神奇減肥糖，一個月瘦20公斤，已有超過10萬人見證。限時特價，請至 mohw-diet-official.com.cn 訂購！",
+   caption_en:"MOHW-certified! Miracle diet candy, lose 20kg in one month, over 100,000 people have witnessed results. Limited time offer at mohw-diet-official.com.cn!",
+   left:{zh:"限時優惠，快買",en:"Limited offer, buy now"},right:{zh:"查食藥署資料庫",en:"Check Taiwan FDA database"},correct:"right",
+   explain_zh:"衛福部從不為「減肥糖」背書。可上食藥署消費者知識服務網查證任何宣稱認證的產品。一個月瘦20公斤已超出醫學安全範圍，這類廣告多為詐騙。",
+   explain_en:"MOHW never endorses \"miracle\" diet products. Verify any \"certified\" claim on the Taiwan FDA consumer portal. 20kg/month far exceeds safe medical limits — these ads are almost always fraudulent."}
+];
+</script>
+<script type="text/babel">
+const {useState, useEffect} = React;
+const SCENE = {TITLE:'title', QUESTION:'question', FEEDBACK:'feedback', END:'end'};
+const QPR = 5;
+
+function pickN(arr, n) {
+  const c=[...arr], o=[];
+  for(let i=0;i<n&&c.length;i++){const idx=Math.floor(Math.random()*c.length);o.push(c.splice(idx,1)[0]);}
+  return o;
+}
+
+const StickmanSVG = ({mood='neutral', color='#1e293b', size=56}) => {
+  const face = mood==='happy'?<path d="M26 15 Q32 21 38 15" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>:
+               mood==='sad'?<path d="M26 18 Q32 13 38 18" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>:
+               <path d="M27 15 L37 15" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>;
+  const arms = mood==='cheer'?
+    <><line x1="32" y1="32" x2="14" y2="20" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="32" y1="32" x2="50" y2="20" stroke={color} strokeWidth="3.5" strokeLinecap="round"/></>:
+    <><line x1="32" y1="34" x2="16" y2="30" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="32" y1="34" x2="48" y2="30" stroke={color} strokeWidth="3.5" strokeLinecap="round"/></>;
+  return (
+    <svg width={size} height={size*1.1} viewBox="0 0 64 70" fill="none">
+      <circle cx="32" cy="14" r="11" fill="none" stroke={color} strokeWidth="3.5"/>
+      <circle cx="28.5" cy="11" r="1.8" fill={color}/><circle cx="35.5" cy="11" r="1.8" fill={color}/>
+      {face}
+      <line x1="32" y1="25" x2="32" y2="46" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      {arms}
+      <line x1="32" y1="46" x2="22" y2="62" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="32" y1="46" x2="42" y2="62" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+    </svg>
+  );
+};
+
+const IGPost = ({q, lang, T}) => (
+  <div className="post">
+    <div className="post-header">
+      <div className={`avatar ${q.av}`}>{(lang==='zh'?q.user_zh:q.user_en).slice(0,2).toUpperCase()}</div>
+      <div>
+        <div className="post-user">{lang==='zh'?q.user_zh:q.user_en}{q.verified&&<span className="post-verified"/>}</div>
+        <div className="post-time">{lang==='zh'?q.time_zh:q.time_en}</div>
+      </div>
+      <div className="post-dots">···</div>
+    </div>
+    <div className={`post-img ${q.img_class}`}>
+      <div className="post-img-headline">{lang==='zh'?q.img_headline_zh:q.img_headline_en}</div>
+      <div className="post-img-sub">{lang==='zh'?q.img_sub_zh:q.img_sub_en}</div>
+      {q.img_url&&<div className="post-img-url">🔗 {q.img_url}</div>}
+    </div>
+    <div className="post-actions">
+      <span>🤍</span><span>💬</span><span>📤</span>
+      <span className="post-save">🔖</span>
+    </div>
+    {q.likes&&<div className="post-likes">讚 {q.likes}</div>}
+    <div className="post-caption"><b>{lang==='zh'?q.user_zh:q.user_en}</b> {lang==='zh'?q.caption_zh:q.caption_en}</div>
+  </div>
+);
+
+const WAThread = ({q, lang}) => (
+  <div className="post">
+    <div className="post-header">
+      <div className={`avatar ${q.av}`}>💬</div>
+      <div>
+        <div className="post-user">{lang==='zh'?q.user_zh:q.user_en}</div>
+        <div className="post-time">{lang==='zh'?q.time_zh:q.time_en}</div>
+      </div>
+    </div>
+    <div className="wa-thread">
+      {(lang==='zh'?q.bubbles_zh:q.bubbles_en).map((b,i,arr)=>(
+        <div key={i}>
+          <div className={`wa-bubble ${b.s==='recv'?'recv':'sent'}`}>{b.t}</div>
+          {i===arr.length-1&&<div className="wa-tick">✓✓ {lang==='zh'?q.time_zh:q.time_en}</div>}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const App = () => {
+  const [scene, setScene] = useState(SCENE.TITLE);
+  const [lang, setLang] = useState('zh');
+  const [qs, setQs] = useState([]);
+  const [qi, setQi] = useState(0);
+  const [res, setRes] = useState([]);
+  const [lc, setLc] = useState(null);
+  const [flash, setFlash] = useState(null);
+  const T = (zh, en) => lang==='zh'?zh:en;
+
+  useEffect(()=>{
+    const h=e=>{
+      if(scene===SCENE.QUESTION){
+        if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')choose('left');
+        else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')choose('right');
+      } else if(scene===SCENE.FEEDBACK){if(e.key==='Enter'||e.key===' ')next();}
+      else if(scene===SCENE.TITLE||scene===SCENE.END){if(e.key==='Enter'||e.key===' ')start();}
+    };
+    window.addEventListener('keydown',h);
+    return()=>window.removeEventListener('keydown',h);
+  });
+
+  const start=()=>{setQs(pickN(window.QB,QPR));setQi(0);setRes([]);setLc(null);setFlash(null);setScene(SCENE.QUESTION);};
+  const choose=(side)=>{
+    if(lc)return;
+    const q=qs[qi],ok=side===q.correct;
+    setLc(side);setFlash(side);setRes(r=>[...r,ok]);
+    setTimeout(()=>setScene(SCENE.FEEDBACK),500);
+  };
+  const next=()=>{
+    setLc(null);setFlash(null);
+    if(qi+1>=qs.length)setScene(SCENE.END);
+    else{setQi(i=>i+1);setScene(SCENE.QUESTION);}
+  };
+
+  const correct=res.filter(Boolean).length;
+  const lastCorrect=res[res.length-1];
+  const q=qs[qi];
+  const awarenessW=res.length===0?'70%':`${(correct/res.length)*100}%`;
+  const awarenessColor=res.length===0?'#2ecc71':correct/res.length>=0.6?'#2ecc71':correct/res.length>=0.4?'#f59e0b':'#ef4444';
+
+  const getLeftClass = () => {
+    if(!flash||flash!=='left') return 'choice-btn cb-blue';
+    return `choice-btn ${lc===q.correct?'cb-correct':'cb-wrong'}`;
+  };
+  const getRightClass = () => {
+    if(!flash||flash!=='right') return 'choice-btn cb-pink';
+    return `choice-btn ${lc===q.correct?'cb-correct':'cb-wrong'}`;
+  };
+
+  return (
+    <div className="phone">
+      <div className="ig-bar">
+        <div className="ig-logo">Cybersecurity</div>
+        <button className="lang-pill" onClick={()=>setLang(l=>l==='zh'?'en':'zh')}>{lang==='zh'?'EN':'中文'}</button>
+      </div>
+      <div className="awareness-bar-wrap">
+        <div className="awareness-label">Awareness</div>
+        <div className="awareness-bg"><div className="awareness-fill" style={{width:awarenessW,background:awarenessColor}}/></div>
+        {(scene===SCENE.QUESTION||scene===SCENE.FEEDBACK)&&
+          <div className="q-counter">{qi+1}/{QPR}</div>}
+      </div>
+
+      <div className="feed">
+        {scene===SCENE.TITLE&&(
+          <div className="title-card">
+            <div className="title-logo">Cybersecurity Literacy</div>
+            <div style={{fontSize:13,color:'#8e8e8e',fontWeight:600}}>資訊安全與數位操弄</div>
+            <StickmanSVG mood="cheer" color="#2d5be3" size={66}/>
+            <div className="title-desc">{T('5 道題，每題二選一\n答錯沒關係，每個人都會犯錯','5 questions · 2 choices each\nIt\'s OK to get one wrong\nEveryone makes mistakes')}</div>
+            <button className="btn-start" onClick={start}>{T('▶ 開始','▶ Start')}</button>
+            <div className="source-note">{T('題材參考 Cofacts','Sources: Cofacts')}</div>
+          </div>
+        )}
+
+        {scene===SCENE.QUESTION&&q&&(
+          <>
+            <div className="scene-label">{T('你會怎麼做？','What would you do?')}</div>
+            {q.type==='ig'?<IGPost q={q} lang={lang} T={T}/>:<WAThread q={q} lang={lang} T={T}/>}
+            <div className="choice-area">
+              <button className={getLeftClass()} onClick={()=>choose('left')} disabled={!!lc}>
+                👈 {lang==='zh'?q.left.zh:q.left.en}
+              </button>
+              <button className={getRightClass()} onClick={()=>choose('right')} disabled={!!lc}>
+                👉 {lang==='zh'?q.right.zh:q.right.en}
+              </button>
+            </div>
+          </>
+        )}
+
+        {scene===SCENE.FEEDBACK&&q&&(
+          <>
+            {q.type==='ig'?<IGPost q={q} lang={lang} T={T}/>:<WAThread q={q} lang={lang} T={T}/>}
+            <div className="fb-area">
+              <div className={`fb-badge ${lastCorrect?'ok':'no'}`}>
+                {lastCorrect?T('✓ 正確！','✓ Correct!'):T('✗ 答錯了','✗ Wrong')}
+              </div>
+              <div className="fb-ans">{T('正確答案','Correct answer')}: <span>
+                {q.correct==='left'?(lang==='zh'?q.left.zh:q.left.en):(lang==='zh'?q.right.zh:q.right.en)}
+              </span></div>
+              <div className={`fb-explain ${lastCorrect?'':'no'}`}>{lang==='zh'?q.explain_zh:q.explain_en}</div>
+              <button className="btn-next" onClick={next}>
+                {qi+1>=QPR?T('看結果 →','See results →'):T('下一則 →','Next →')}
+              </button>
+            </div>
+          </>
+        )}
+
+        {scene===SCENE.END&&(()=>{
+          const perfect=correct===QPR,good=correct>=3;
+          const mood=perfect?'cheer':good?'happy':'sad';
+          const color=perfect?'#2d5be3':good?'#059669':'#ef4444';
+          const headline=perfect?T('★ 全部答對！','★ Flawless!'):good?T('答得不錯！','Not bad!'):T('繼續加油！','Keep learning!');
+          const sub=perfect?T('你是資安守護者！','You are a Cyber Guardian!'):good?T('繼續精進辨識力','Keep sharpening your skills'):T('看完解說再挑戰一次','Review the tips and retry');
+          return(
+            <div className="end-card">
+              <div className="end-scene">
+                <div className="end-ground"/>
+                <div className="end-sm"><StickmanSVG mood={mood} color={color} size={56}/></div>
+              </div>
+              <div className="end-headline" style={{color}}>{headline}</div>
+              <div className="end-sub">{sub}</div>
+              <div className="end-score">{T('得分','Score')}: {correct} / {QPR}</div>
+              <div className="pips">{res.map((r,i)=><div key={i} className={`pip ${r?'ok':'no'}`}>{r?'✓':'✗'}</div>)}</div>
+              <button className="btn-replay" onClick={start}>{T('▶ 再玩一次','▶ Play again')}</button>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+};
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
